@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шкільна Дискотека - Реєстрація</title>
+    <title>Весільна Дискотека - Реєстрація</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QR Code Generator -->
@@ -16,31 +16,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+
         body {
-            background-color: #0f172a; /* Dark slate */
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: #4a4a4a;
+            font-family: 'Lato', sans-serif;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-        .neon-text {
-            text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6;
+        
+        h1, h2, .font-serif {
+            font-family: 'Playfair Display', serif;
         }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+        .gold-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.1);
         }
+
+        .wedding-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #d4af37; /* Gold border */
+        }
+
+        .input-wedding {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            transition: all 0.3s ease;
+        }
+        .input-wedding:focus {
+            border-color: #d4af37;
+            ring: 2px solid #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-wedding {
+            background: linear-gradient(to right, #d4af37, #c5a028);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .btn-wedding:hover {
+            background: linear-gradient(to right, #c5a028, #b08d22);
+        }
+
         #reader {
             width: 100%;
             border-radius: 8px;
             overflow: hidden;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        
         /* Loader */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #8b5cf6;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4af37;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
@@ -50,153 +89,168 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <!-- GLOBAL ERROR MESSAGE -->
-    <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-4 text-center hidden z-50 shadow-lg">
+    <div id="globalError" class="fixed top-0 left-0 w-full bg-rose-500 text-white p-4 text-center hidden z-50 shadow-lg font-bold">
         <!-- Error text will be injected here -->
     </div>
 
+    <!-- DECORATIVE ELEMENTS -->
+    <div class="fixed top-0 left-0 w-32 h-32 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#d4af37" d="M45.7,-76.3C58.9,-69.3,69.1,-55.6,76.3,-41.2C83.5,-26.8,87.7,-11.7,85.6,2.6C83.5,16.9,75.1,30.4,65.3,42.1C55.6,53.8,44.5,63.7,31.7,70.3C18.9,76.9,4.4,80.2,-9.3,78.8C-23,77.4,-35.9,71.3,-47.4,63.1C-58.9,54.9,-69,44.6,-75.4,32.2C-81.8,19.8,-84.5,5.3,-82.1,-8.3C-79.7,-21.9,-72.2,-34.6,-62.4,-44.2C-52.6,-53.8,-40.5,-60.3,-28.4,-67.9C-16.3,-75.5,-4.2,-84.2,9.3,-85.6C22.8,-87,32.5,-83.3,45.7,-76.3Z" transform="translate(100 100)" />
+        </svg>
+    </div>
+
     <!-- MAIN CONTAINER -->
-    <div class="w-full max-w-md glass-panel p-6 rounded-2xl shadow-2xl relative">
+    <div class="w-full max-w-md wedding-card p-8 rounded-xl relative z-10">
         
         <!-- HEADER -->
-        <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 neon-text mb-2">
-                <i class="fas fa-music mr-2"></i>SCHOOL DISCO
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-3 text-yellow-600 opacity-80">
+                <i class="fas fa-heart text-2xl mx-1 animate-pulse"></i>
+                <i class="fas fa-ring text-3xl mx-2"></i>
+                <i class="fas fa-heart text-2xl mx-1 animate-pulse"></i>
+            </div>
+            <h1 class="text-4xl font-bold gold-text font-serif mb-2 tracking-wide">
+                Wedding Disco
             </h1>
-            <p class="text-gray-400 text-sm">Реєстрація та вхід</p>
+            <p class="text-gray-500 uppercase tracking-widest text-xs">Шкільна Вечірка</p>
+            <div class="w-16 h-1 bg-yellow-400 mx-auto mt-4 rounded-full opacity-50"></div>
         </div>
 
         <!-- VIEW: REGISTRATION FORM (Default) -->
         <div id="view-register">
-            <form id="registerForm" class="space-y-4">
+            <form id="registerForm" class="space-y-5">
                 <!-- Step 1: Personal Data -->
                 <div id="step-data" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Ім'я</label>
-                        <input type="text" id="regFirstName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Іван">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Ім'я</label>
+                        <input type="text" id="regFirstName" required class="w-full p-3 rounded-lg input-wedding outline-none" placeholder="Іван">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Прізвище</label>
-                        <input type="text" id="regLastName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Петренко">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Прізвище</label>
+                        <input type="text" id="regLastName" required class="w-full p-3 rounded-lg input-wedding outline-none" placeholder="Петренко">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Клас</label>
-                        <select id="regGrade" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white">
-                            <option value="" disabled selected>Оберіть клас</option>
-                            <option value="9">9 Клас</option>
-                            <option value="10">10 Клас</option>
-                            <option value="11">11 Клас</option>
-                        </select>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Клас</label>
+                        <div class="relative">
+                            <select id="regGrade" required class="w-full p-3 rounded-lg input-wedding outline-none appearance-none cursor-pointer">
+                                <option value="" disabled selected>Оберіть клас</option>
+                                <option value="9">9 Клас</option>
+                                <option value="10">10 Клас</option>
+                                <option value="11">11 Клас</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Телефон</label>
-                        <input type="tel" id="regPhone" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="+380991234567" value="+380">
-                        <p class="text-xs text-gray-500 mt-1">Введіть номер для зв'язку</p>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Телефон</label>
+                        <input type="tel" id="regPhone" required class="w-full p-3 rounded-lg input-wedding outline-none" placeholder="+380..." value="+380">
                     </div>
                     
-                    <!-- ReCaptcha Container (Standard Google Widget) -->
-                    <!-- NOTE: Replace data-sitekey with your own from Google Recaptcha Admin console for production -->
+                    <!-- ReCaptcha Container -->
                     <div class="flex justify-center my-4">
                         <div class="g-recaptcha" data-sitekey="6LeKzCosAAAAALIF_wFbmz3PKZPQZ2nRfAHUxUn4"></div>
                     </div>
                 </div>
 
-                <div id="regError" class="text-red-400 text-sm text-center hidden p-2 bg-red-900/50 rounded border border-red-500/50"></div>
+                <div id="regError" class="text-rose-500 text-sm text-center hidden p-2 bg-rose-50 rounded border border-rose-200"></div>
                 
-                <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold hover:opacity-90 transition transform active:scale-95">
-                    Отримати квиток
+                <button type="submit" id="regSubmitBtn" class="w-full py-4 btn-wedding rounded-lg font-bold uppercase tracking-widest text-sm hover:shadow-lg transition transform active:scale-95">
+                    Отримати Запрошення
                 </button>
             </form>
         </div>
 
         <!-- VIEW: TICKET SUCCESS -->
-        <div id="view-ticket" class="hidden text-center space-y-4">
-            <div class="bg-green-500/20 text-green-300 p-2 rounded-lg text-sm border border-green-500/50">
-                Успішно зареєстровано!
+        <div id="view-ticket" class="hidden text-center space-y-6">
+            <div class="border-b-2 border-dashed border-gray-200 pb-6">
+                <div class="bg-green-50 text-green-600 px-4 py-2 rounded-full text-sm inline-block mb-4 border border-green-200">
+                    <i class="fas fa-check-circle mr-1"></i> Ви у списку гостей!
+                </div>
+                
+                <h3 class="font-serif text-2xl text-gray-800 mb-1" id="ticketName"></h3>
+                <p class="text-yellow-600 font-bold uppercase text-xs tracking-widest" id="ticketGrade"></p>
             </div>
-            <p class="text-gray-300 text-sm">Зроби скріншот цього QR-коду.</p>
             
-            <div class="flex justify-center bg-white p-4 rounded-xl mx-auto w-fit">
-                <div id="qrcode"></div>
+            <div class="relative">
+                <div class="flex justify-center bg-white p-2 rounded-lg mx-auto w-fit border border-gray-100 shadow-sm">
+                    <div id="qrcode"></div>
+                </div>
+                <p class="text-gray-400 text-xs mt-3">ID: <span id="ticketId" class="font-mono"></span></p>
             </div>
 
-            <div class="text-left bg-slate-800 p-4 rounded-lg text-sm space-y-1">
-                <p><span class="text-gray-400">Ім'я:</span> <span id="ticketName" class="font-bold text-white"></span></p>
-                <p><span class="text-gray-400">Клас:</span> <span id="ticketGrade" class="font-bold text-purple-400"></span></p>
-                <p><span class="text-gray-400">ID:</span> <span id="ticketId" class="font-mono text-xs text-gray-500"></span></p>
-            </div>
-            
-            <div class="text-xs text-gray-500 mt-4">
-                Цей код є одноразовим. Покажіть його на вході.
+            <div class="text-xs text-gray-400 italic">
+                Збережіть цей QR-код (скріншот). Він є вашим перепусткою на свято.
             </div>
         </div>
 
         <!-- VIEW: ADMIN LOGIN -->
         <div id="view-admin-login" class="hidden">
-            <h2 class="text-xl font-bold mb-4 text-center">Вхід для Адміністратора</h2>
+            <h2 class="text-2xl font-serif text-center mb-6 text-gray-800">Вхід для Адміністратора</h2>
             <form id="adminLoginForm" class="space-y-4">
-                <input type="text" id="adminUser" placeholder="Логін" class="w-full p-2 rounded bg-slate-800 border border-slate-600 text-white">
-                <input type="password" id="adminPass" placeholder="Пароль" class="w-full p-2 rounded bg-slate-800 border border-slate-600 text-white">
-                <div id="loginError" class="text-red-400 text-sm hidden">Невірні дані</div>
-                <button type="submit" class="w-full py-2 bg-blue-600 rounded hover:bg-blue-700">Увійти</button>
-                <button type="button" onclick="showView('view-register')" class="w-full py-2 text-gray-400 hover:text-white text-sm">Назад</button>
+                <input type="text" id="adminUser" placeholder="Логін" class="w-full p-3 rounded-lg input-wedding">
+                <input type="password" id="adminPass" placeholder="Пароль" class="w-full p-3 rounded-lg input-wedding">
+                <div id="loginError" class="text-rose-500 text-sm hidden text-center">Невірні дані</div>
+                <button type="submit" class="w-full py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">Увійти</button>
+                <button type="button" onclick="showView('view-register')" class="w-full py-2 text-gray-400 hover:text-gray-600 text-sm">Повернутися</button>
             </form>
         </div>
 
         <!-- VIEW: ADMIN DASHBOARD -->
         <div id="view-admin-dash" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-lg">Адмін Панель</h2>
-                <button onclick="logoutAdmin()" class="text-xs text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt"></i> Вихід</button>
+            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                <h2 class="font-serif text-xl text-gray-800">Список Гостей</h2>
+                <button onclick="logoutAdmin()" class="text-xs text-rose-500 hover:text-rose-700 font-bold uppercase tracking-wider"> Вихід <i class="fas fa-sign-out-alt ml-1"></i></button>
             </div>
 
             <!-- Tabs -->
-            <div class="flex space-x-2 mb-4">
-                <button onclick="switchAdminTab('scan')" id="tab-scan" class="flex-1 py-1 rounded bg-purple-600 text-white text-sm">Сканер</button>
-                <button onclick="switchAdminTab('list')" id="tab-list" class="flex-1 py-1 rounded bg-slate-700 text-gray-300 text-sm">Список</button>
+            <div class="flex space-x-2 mb-6 bg-gray-100 p-1 rounded-lg">
+                <button onclick="switchAdminTab('scan')" id="tab-scan" class="flex-1 py-2 rounded-md bg-white text-gray-800 shadow-sm text-sm font-bold transition-all">Сканер</button>
+                <button onclick="switchAdminTab('list')" id="tab-list" class="flex-1 py-2 rounded-md text-gray-500 hover:text-gray-700 text-sm font-medium transition-all">Список</button>
             </div>
 
             <!-- Tab Content: Scanner -->
             <div id="admin-scan-content">
-                <div id="reader" class="bg-black"></div>
-                <div id="scanResult" class="mt-4 p-3 rounded-lg text-center hidden font-bold text-lg transition-all duration-300"></div>
-                <div class="mt-4 text-center">
-                    <button id="startScanBtn" class="bg-green-600 px-4 py-2 rounded text-sm">Увімкнути камеру</button>
-                    <button id="stopScanBtn" class="bg-red-600 px-4 py-2 rounded text-sm hidden">Вимкнути</button>
+                <div id="reader" class="bg-gray-100"></div>
+                <div id="scanResult" class="mt-4 p-4 rounded-lg text-center hidden font-bold text-lg transition-all duration-300 shadow-md"></div>
+                <div class="mt-6 text-center">
+                    <button id="startScanBtn" class="bg-green-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-700 transition transform hover:scale-105">
+                        <i class="fas fa-camera mr-2"></i> Сканувати
+                    </button>
+                    <button id="stopScanBtn" class="bg-rose-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-rose-600 transition hidden">
+                        Зупинити
+                    </button>
                 </div>
             </div>
 
             <!-- Tab Content: List & Stats -->
-            <div id="admin-list-content" class="hidden h-96 overflow-y-auto">
+            <div id="admin-list-content" class="hidden h-96 overflow-y-auto pr-1">
                 <!-- Stats -->
-                <div class="grid grid-cols-3 gap-2 mb-4 text-center">
-                    <div class="bg-slate-800 p-2 rounded">
-                        <div class="text-xs text-gray-400">9 Клас</div>
-                        <div id="count9" class="font-bold text-purple-400">0</div>
+                <div class="grid grid-cols-3 gap-3 mb-6 text-center">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-widest">9 Клас</div>
+                        <div id="count9" class="font-serif text-xl text-yellow-600 font-bold">0</div>
                     </div>
-                    <div class="bg-slate-800 p-2 rounded">
-                        <div class="text-xs text-gray-400">10 Клас</div>
-                        <div id="count10" class="font-bold text-purple-400">0</div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-widest">10 Клас</div>
+                        <div id="count10" class="font-serif text-xl text-yellow-600 font-bold">0</div>
                     </div>
-                    <div class="bg-slate-800 p-2 rounded">
-                        <div class="text-xs text-gray-400">11 Клас</div>
-                        <div id="count11" class="font-bold text-purple-400">0</div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-widest">11 Клас</div>
+                        <div id="count11" class="font-serif text-xl text-yellow-600 font-bold">0</div>
                     </div>
                 </div>
-                <div class="flex justify-between text-xs text-gray-400 mb-2 px-1">
-                    <span>Всього: <span id="totalReg" class="text-white">0</span></span>
-                    <span>Пройшли: <span id="totalEntered" class="text-green-400">0</span></span>
+                
+                <div class="flex justify-between text-xs text-gray-400 mb-2 px-1 border-b border-gray-100 pb-2">
+                    <span>Всього: <span id="totalReg" class="text-gray-800 font-bold">0</span></span>
+                    <span>Прийшли: <span id="totalEntered" class="text-green-600 font-bold">0</span></span>
                 </div>
 
                 <!-- Table -->
                 <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-400 bg-slate-800 uppercase">
-                        <tr>
-                            <th class="px-2 py-2">Учень</th>
-                            <th class="px-2 py-2">Клас</th>
-                            <th class="px-2 py-2">Статус</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody">
+                    <tbody id="studentsTableBody" class="divide-y divide-gray-100">
                         <!-- Rows generated by JS -->
                     </tbody>
                 </table>
@@ -206,8 +260,8 @@
     </div>
 
     <!-- Hidden Admin Trigger -->
-    <div class="fixed bottom-2 right-2 opacity-30 hover:opacity-100 transition">
-        <button onclick="showView('view-admin-login')" class="text-gray-500 hover:text-white p-2">
+    <div class="fixed bottom-4 right-4">
+        <button onclick="showView('view-admin-login')" class="text-gray-300 hover:text-yellow-600 transition p-2 bg-white rounded-full shadow-sm hover:shadow-md border border-gray-100">
             <i class="fas fa-user-shield"></i>
         </button>
     </div>
@@ -240,8 +294,9 @@
         // UI HELPERS
         const showGlobalError = (msg) => {
             const el = document.getElementById('globalError');
-            el.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> ${msg}`;
+            el.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${msg}`;
             el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
         };
 
         // GLOBAL STATE
@@ -249,7 +304,6 @@
         let unsubscribeListeners = null;
 
         // AUTHENTICATION STRATEGY
-        // Anonymous auth for DB access
         signInAnonymously(auth).catch((err) => console.log("Anon auth failed:", err));
 
         // =======================
@@ -292,7 +346,7 @@
             // 1. CAPTCHA CHECK
             const captchaResponse = grecaptcha.getResponse();
             if (!captchaResponse) {
-                errorDiv.innerText = "Будь ласка, підтвердіть, що ви не робот (натисніть капчу).";
+                errorDiv.innerText = "Будь ласка, підтвердіть, що ви не робот.";
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -310,11 +364,10 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Обробка...';
+            submitBtn.innerHTML = '<div class="loader"></div>';
 
             try {
                 // 3. Save Data to Firestore
-                // We use Anonymous Auth which must be enabled in Firebase Console
                 if (!auth.currentUser) await signInAnonymously(auth);
 
                 const docRef = await addDoc(collection(db, "guests"), {
@@ -332,9 +385,9 @@
                 document.getElementById('qrcode').innerHTML = "";
                 new QRCode(document.getElementById('qrcode'), {
                     text: guestId,
-                    width: 180,
-                    height: 180,
-                    colorDark : "#000000",
+                    width: 160,
+                    height: 160,
+                    colorDark : "#4a4a4a",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
@@ -347,17 +400,16 @@
                 showView('view-ticket');
                 localStorage.setItem('saved_ticket', guestId);
                 
-                // Reset form and captcha
                 registerForm.reset();
                 grecaptcha.reset();
 
             } catch (error) {
                 console.error("Registration Error:", error);
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Отримати квиток";
+                submitBtn.textContent = "Отримати Запрошення";
                 
-                let msg = "Помилка реєстрації. Спробуйте ще раз.";
-                if (error.code === 'permission-denied') msg = "Помилка доступу. Перевірте налаштування бази даних.";
+                let msg = "Помилка реєстрації.";
+                if (error.code === 'permission-denied') msg = "Помилка доступу до бази.";
                 
                 errorDiv.innerHTML = msg;
                 errorDiv.classList.remove('hidden');
@@ -390,22 +442,31 @@
         }
 
         window.switchAdminTab = (tab) => {
-            if (tab === 'scan') {
-                document.getElementById('tab-scan').classList.replace('bg-slate-700', 'bg-purple-600');
-                document.getElementById('tab-scan').classList.replace('text-gray-300', 'text-white');
-                document.getElementById('tab-list').classList.replace('bg-purple-600', 'bg-slate-700');
-                document.getElementById('tab-list').classList.replace('text-white', 'text-gray-300');
-                
-                document.getElementById('admin-scan-content').classList.remove('hidden');
-                document.getElementById('admin-list-content').classList.add('hidden');
-            } else {
-                document.getElementById('tab-list').classList.replace('bg-slate-700', 'bg-purple-600');
-                document.getElementById('tab-list').classList.replace('text-gray-300', 'text-white');
-                document.getElementById('tab-scan').classList.replace('bg-purple-600', 'bg-slate-700');
-                document.getElementById('tab-scan').classList.replace('text-white', 'text-gray-300');
+            const btnScan = document.getElementById('tab-scan');
+            const btnList = document.getElementById('tab-list');
+            const viewScan = document.getElementById('admin-scan-content');
+            const viewList = document.getElementById('admin-list-content');
 
-                document.getElementById('admin-list-content').classList.remove('hidden');
-                document.getElementById('admin-scan-content').classList.add('hidden');
+            if (tab === 'scan') {
+                btnScan.classList.replace('text-gray-500', 'bg-white');
+                btnScan.classList.add('shadow-sm', 'text-gray-800');
+                btnScan.classList.remove('hover:text-gray-700');
+                
+                btnList.classList.remove('bg-white', 'shadow-sm', 'text-gray-800');
+                btnList.classList.add('text-gray-500', 'hover:text-gray-700');
+                
+                viewScan.classList.remove('hidden');
+                viewList.classList.add('hidden');
+            } else {
+                btnList.classList.replace('text-gray-500', 'bg-white');
+                btnList.classList.add('shadow-sm', 'text-gray-800');
+                btnList.classList.remove('hover:text-gray-700');
+                
+                btnScan.classList.remove('bg-white', 'shadow-sm', 'text-gray-800');
+                btnScan.classList.add('text-gray-500', 'hover:text-gray-700');
+
+                viewList.classList.remove('hidden');
+                viewScan.classList.add('hidden');
             }
         }
 
@@ -446,9 +507,9 @@
             isProcessingScan = true;
 
             const resDiv = document.getElementById('scanResult');
-            resDiv.classList.remove('hidden', 'bg-green-500', 'bg-red-500', 'bg-yellow-500');
-            resDiv.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Перевірка...';
-            resDiv.classList.add('bg-slate-700');
+            resDiv.classList.remove('hidden', 'bg-green-500', 'bg-rose-500', 'bg-yellow-500', 'text-white');
+            resDiv.innerHTML = '<div class="loader"></div>';
+            resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-gray-100 text-gray-800 shadow-md";
 
             try {
                 const docRef = doc(db, "guests", decodedText);
@@ -458,50 +519,59 @@
                     const data = docSnap.data();
                     
                     if (data.status === 'registered') {
-                        // SUCCESS: Allow Entry
+                        // SUCCESS
                         await updateDoc(docRef, {
                             status: 'entered',
                             enteredAt: serverTimestamp()
                         });
-                        resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-green-500 text-white";
-                        resDiv.innerHTML = `✅ ПРОХІД ДОЗВОЛЕНО<br><span class="text-sm">${data.firstName} ${data.lastName} (${data.grade} кл)</span>`;
+                        resDiv.className = "mt-4 p-4 rounded-lg text-center bg-green-50 border border-green-200 shadow-md";
+                        resDiv.innerHTML = `
+                            <div class="text-green-600 text-2xl mb-1"><i class="fas fa-check-circle"></i></div>
+                            <div class="font-serif font-bold text-gray-800">${data.firstName} ${data.lastName}</div>
+                            <div class="text-xs text-green-600 uppercase tracking-widest mt-1">Дозволено (${data.grade} кл)</div>
+                        `;
                         playBeep(true);
                     } else if (data.status === 'entered') {
-                        // FAIL: Already Used
-                        resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-yellow-500 text-black";
-                        resDiv.innerHTML = `⚠️ КОД ВЖЕ ВИКОРИСТАНО<br><span class="text-sm">${data.firstName} ${data.lastName}</span><br><span class="text-xs">Вже увійшов</span>`;
+                        // ALREADY USED
+                        resDiv.className = "mt-4 p-4 rounded-lg text-center bg-yellow-50 border border-yellow-200 shadow-md";
+                        resDiv.innerHTML = `
+                            <div class="text-yellow-600 text-2xl mb-1"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="font-serif font-bold text-gray-800">${data.firstName} ${data.lastName}</div>
+                            <div class="text-xs text-yellow-600 uppercase tracking-widest mt-1">Вже увійшов</div>
+                        `;
                         playBeep(false);
                     }
                 } else {
-                    // FAIL: Not Found
-                    resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-red-600 text-white";
-                    resDiv.innerText = "⛔ КОД НЕ ЗНАЙДЕНО";
+                    // NOT FOUND
+                    resDiv.className = "mt-4 p-4 rounded-lg text-center bg-rose-50 border border-rose-200 shadow-md";
+                    resDiv.innerHTML = `
+                        <div class="text-rose-500 text-2xl mb-1"><i class="fas fa-times-circle"></i></div>
+                        <div class="font-bold text-rose-500 uppercase tracking-widest text-sm">Код не знайдено</div>
+                    `;
                     playBeep(false);
                 }
             } catch (err) {
                 console.error(err);
-                resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-red-600 text-white";
-                resDiv.innerText = "Помилка доступу до бази";
+                resDiv.innerText = "Помилка";
             }
 
-            // Cooldown before next scan
             setTimeout(() => {
                 isProcessingScan = false;
-            }, 2500);
+            }, 3000);
         };
 
         function playBeep(success) {
             const context = new (window.AudioContext || window.webkitAudioContext)();
             const osc = context.createOscillator();
             osc.type = success ? 'sine' : 'sawtooth';
-            osc.frequency.value = success ? 800 : 200;
+            osc.frequency.value = success ? 880 : 200;
             osc.connect(context.destination);
             osc.start();
-            osc.stop(context.currentTime + 0.2);
+            osc.stop(context.currentTime + 0.15);
             if(success) {
                 setTimeout(() => {
                     const osc2 = context.createOscillator();
-                    osc2.frequency.value = 1200;
+                    osc2.frequency.value = 1100;
                     osc2.connect(context.destination);
                     osc2.start();
                     osc2.stop(context.currentTime + 0.1);
@@ -513,7 +583,7 @@
         // DASHBOARD DATA LISTENER
         // =======================
         function initAdminDashboard() {
-            if (unsubscribeListeners) return; // Already listening
+            if (unsubscribeListeners) return;
 
             const q = query(collection(db, "guests"), orderBy("createdAt", "desc"));
             
@@ -521,30 +591,28 @@
                 const tableBody = document.getElementById('studentsTableBody');
                 let c9 = 0, c10 = 0, c11 = 0;
                 let entered = 0;
-                
                 let html = '';
 
                 snapshot.docs.forEach(doc => {
                     const d = doc.data();
                     
-                    // Count stats
                     if (d.grade == '9') c9++;
                     if (d.grade == '10') c10++;
                     if (d.grade == '11') c11++;
                     if (d.status === 'entered') entered++;
 
-                    const statusColor = d.status === 'entered' ? 'text-green-400' : 'text-yellow-400';
-                    const statusText = d.status === 'entered' ? 'В залі' : 'Зареєстр.';
-                    const rowBg = d.status === 'entered' ? 'bg-slate-800/50' : '';
+                    const statusBadge = d.status === 'entered' 
+                        ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase">В залі</span>' 
+                        : '<span class="px-2 py-1 bg-gray-100 text-gray-500 rounded-full text-[10px] font-bold uppercase">Очікує</span>';
 
                     html += `
-                        <tr class="border-b border-slate-700 ${rowBg}">
-                            <td class="px-2 py-3 font-medium text-white">
-                                ${d.firstName} ${d.lastName}
-                                <div class="text-xs text-gray-500">${d.phone}</div>
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-2 py-3">
+                                <div class="font-bold text-gray-800">${d.firstName} ${d.lastName}</div>
+                                <div class="text-[10px] text-gray-400 font-mono">${d.phone}</div>
                             </td>
-                            <td class="px-2 py-3">${d.grade}</td>
-                            <td class="px-2 py-3 ${statusColor} font-bold text-xs uppercase">${statusText}</td>
+                            <td class="px-2 py-3 text-xs text-gray-600">${d.grade}</td>
+                            <td class="px-2 py-3 text-right">${statusBadge}</td>
                         </tr>
                     `;
                 });
@@ -557,7 +625,6 @@
                 document.getElementById('totalEntered').innerText = entered;
             }, (error) => {
                  console.error("Dashboard Error:", error);
-                 alert("Не вдалося завантажити список. Перевірте консоль Firebase (Rules).");
             });
         }
 
