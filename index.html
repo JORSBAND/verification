@@ -2,8 +2,8 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шкільна Дискотека - Реєстрація</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Весільна Дискотека 80-х</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QR Code Generator -->
@@ -16,187 +16,247 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ruslan+Display&family=Montserrat:wght@400;700&display=swap');
+
+        /* Background matched to the peach color of your collage */
         body {
-            background-color: #0f172a; /* Dark slate */
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fcece4; 
+            color: #1a1a1a;
+            font-family: 'Montserrat', sans-serif;
+            background-image: radial-gradient(#eacab5 1px, transparent 1px);
+            background-size: 20px 20px;
         }
-        .neon-text {
-            text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6;
+        
+        h1, h2, .retro-font {
+            font-family: 'Ruslan Display', cursive; /* Retro style font */
         }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+        .wedding-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #1a1a1a;
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8); /* Slightly smaller shadow for mobile */
+            border-radius: 0;
         }
+
+        .input-retro {
+            background-color: #fff;
+            border: 2px solid #1a1a1a;
+            color: #1a1a1a;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+        .input-retro:focus {
+            box-shadow: 4px 4px 0px #d4af37;
+            outline: none;
+            border-color: #1a1a1a;
+        }
+
+        .btn-retro {
+            background-color: #d946ef; /* Bright pink */
+            border: 2px solid #1a1a1a;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px #1a1a1a;
+            transition: all 0.1s;
+        }
+        .btn-retro:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #1a1a1a;
+        }
+        .btn-retro:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #1a1a1a;
+        }
+
         #reader {
             width: 100%;
-            border-radius: 8px;
-            overflow: hidden;
+            border: 3px solid #1a1a1a;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
         }
+        
         /* Loader */
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #8b5cf6;
+            border-top: 4px solid #d946ef;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
 
     <!-- GLOBAL ERROR MESSAGE -->
-    <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-4 text-center hidden z-50 shadow-lg">
+    <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-3 text-center hidden z-50 shadow-lg font-bold border-b-4 border-black text-sm">
         <!-- Error text will be injected here -->
     </div>
 
     <!-- MAIN CONTAINER -->
-    <div class="w-full max-w-md glass-panel p-6 rounded-2xl shadow-2xl relative">
+    <div class="w-full max-w-md wedding-card p-4 sm:p-6 relative z-10">
         
-        <!-- HEADER -->
-        <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 neon-text mb-2">
-                <i class="fas fa-music mr-2"></i>SCHOOL DISCO
+        <!-- HEADER WITH IMAGE PLACEHOLDER -->
+        <div class="text-center mb-4">
+            <!-- Зменшено відступи та встановлено горизонтальний формат -->
+            <div class="mb-3 border-2 border-black p-1 bg-white shadow-sm mx-auto max-w-full">
+                <!-- Використано max-h для обмеження висоти на мобільних -->
+                <img src="https://i.ibb.co/mV3fXX2k/photo-2025-12-14-00-08-07.jpg" 
+                     alt="Disco Collage" 
+                     class="w-full h-auto max-h-[200px] object-cover object-center grayscale-0"
+                     id="headerImage">
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-bold text-black retro-font mb-1 tracking-wider uppercase leading-none">
+                <span class="text-pink-600">Disco</span> Wedding
             </h1>
-            <p class="text-gray-400 text-sm">Реєстрація та вхід</p>
+            <div class="flex justify-center items-center space-x-2 text-xs sm:text-sm font-bold bg-yellow-300 inline-block px-2 border border-black transform -skew-x-12 mt-1">
+                <span>80s VIBES</span>
+                <i class="fas fa-compact-disc animate-spin-slow"></i>
+                <span>SCHOOL PARTY</span>
+            </div>
         </div>
 
         <!-- VIEW: REGISTRATION FORM (Default) -->
         <div id="view-register">
-            <form id="registerForm" class="space-y-4">
+            <form id="registerForm" class="space-y-3">
                 <!-- Step 1: Personal Data -->
-                <div id="step-data" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300">Ім'я</label>
-                        <input type="text" id="regFirstName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Іван">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300">Прізвище</label>
-                        <input type="text" id="regLastName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Петренко">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300">Клас</label>
-                        <select id="regGrade" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white">
-                            <option value="" disabled selected>Оберіть клас</option>
-                            <option value="9">9 Клас</option>
-                            <option value="10">10 Клас</option>
-                            <option value="11">11 Клас</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300">Телефон</label>
-                        <input type="tel" id="regPhone" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="+380991234567" value="+380">
-                        <p class="text-xs text-gray-500 mt-1">Введіть номер для зв'язку</p>
+                <div id="step-data" class="space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Ім'я</label>
+                            <input type="text" id="regFirstName" required class="w-full p-2 text-sm input-retro" placeholder="Вася">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Прізвище</label>
+                            <input type="text" id="regLastName" required class="w-full p-2 text-sm input-retro" placeholder="Пупкін">
+                        </div>
                     </div>
                     
-                    <!-- ReCaptcha Container (Standard Google Widget) -->
-                    <!-- NOTE: Replace data-sitekey with your own from Google Recaptcha Admin console for production -->
-                    <div class="flex justify-center my-4">
+                    <div class="grid grid-cols-2 gap-2">
+                         <div>
+                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Клас</label>
+                            <div class="relative">
+                                <select id="regGrade" required class="w-full p-2 text-sm input-retro appearance-none cursor-pointer">
+                                    <option value="" disabled selected>Клас</option>
+                                    <option value="9">9 Клас</option>
+                                    <option value="10">10 Клас</option>
+                                    <option value="11">11 Клас</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-black">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Телефон</label>
+                            <input type="tel" id="regPhone" required class="w-full p-2 text-sm input-retro" placeholder="+380..." value="+380">
+                        </div>
+                    </div>
+
+                    <!-- ReCaptcha Container (Compact) -->
+                    <div class="flex justify-center my-2 border-2 border-black p-1 bg-gray-50 transform scale-90 origin-center">
                         <div class="g-recaptcha" data-sitekey="6LeKzCosAAAAALIF_wFbmz3PKZPQZ2nRfAHUxUn4"></div>
                     </div>
                 </div>
 
-                <div id="regError" class="text-red-400 text-sm text-center hidden p-2 bg-red-900/50 rounded border border-red-500/50"></div>
+                <div id="regError" class="text-red-600 text-xs text-center hidden p-1 bg-red-100 border border-red-600 font-bold"></div>
                 
-                <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold hover:opacity-90 transition transform active:scale-95">
-                    Отримати квиток
+                <button type="submit" id="regSubmitBtn" class="w-full py-3 btn-retro font-black text-base tracking-widest mt-2">
+                    ОТРИМАТИ КВИТОК!
                 </button>
             </form>
         </div>
 
         <!-- VIEW: TICKET SUCCESS -->
         <div id="view-ticket" class="hidden text-center space-y-4">
-            <div class="bg-green-500/20 text-green-300 p-2 rounded-lg text-sm border border-green-500/50">
-                Успішно зареєстровано!
+            <div class="border-b-4 border-dotted border-black pb-4">
+                <div class="bg-green-400 text-black px-4 py-1 border-2 border-black transform rotate-2 inline-block mb-3 font-bold shadow-[3px_3px_0px_rgba(0,0,0,1)] text-sm">
+                    <i class="fas fa-check"></i> ТИ У СПИСКУ!
+                </div>
+                
+                <h3 class="retro-font text-xl text-black mb-1" id="ticketName"></h3>
+                <p class="text-purple-600 font-black uppercase text-xs tracking-widest bg-purple-100 inline-block px-2" id="ticketGrade"></p>
             </div>
-            <p class="text-gray-300 text-sm">Зроби скріншот цього QR-коду.</p>
             
-            <div class="flex justify-center bg-white p-4 rounded-xl mx-auto w-fit">
-                <div id="qrcode"></div>
+            <div class="relative">
+                <div class="flex justify-center bg-white p-2 mx-auto w-fit border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">
+                    <div id="qrcode"></div>
+                </div>
+                <p class="text-gray-500 text-[10px] mt-2 font-mono">ID: <span id="ticketId" class="font-bold text-black"></span></p>
             </div>
 
-            <div class="text-left bg-slate-800 p-4 rounded-lg text-sm space-y-1">
-                <p><span class="text-gray-400">Ім'я:</span> <span id="ticketName" class="font-bold text-white"></span></p>
-                <p><span class="text-gray-400">Клас:</span> <span id="ticketGrade" class="font-bold text-purple-400"></span></p>
-                <p><span class="text-gray-400">ID:</span> <span id="ticketId" class="font-mono text-xs text-gray-500"></span></p>
-            </div>
-            
-            <div class="text-xs text-gray-500 mt-4">
-                Цей код є одноразовим. Покажіть його на вході.
+            <div class="text-[10px] font-bold text-red-500 uppercase bg-red-50 p-1 border border-red-200">
+                Зроби скріншот! Без нього не пустять!
             </div>
         </div>
 
         <!-- VIEW: ADMIN LOGIN -->
         <div id="view-admin-login" class="hidden">
-            <h2 class="text-xl font-bold mb-4 text-center">Вхід для Адміністратора</h2>
-            <form id="adminLoginForm" class="space-y-4">
-                <input type="text" id="adminUser" placeholder="Логін" class="w-full p-2 rounded bg-slate-800 border border-slate-600 text-white">
-                <input type="password" id="adminPass" placeholder="Пароль" class="w-full p-2 rounded bg-slate-800 border border-slate-600 text-white">
-                <div id="loginError" class="text-red-400 text-sm hidden">Невірні дані</div>
-                <button type="submit" class="w-full py-2 bg-blue-600 rounded hover:bg-blue-700">Увійти</button>
-                <button type="button" onclick="showView('view-register')" class="w-full py-2 text-gray-400 hover:text-white text-sm">Назад</button>
+            <h2 class="text-xl retro-font text-center mb-4 text-black">Вхід для своїх</h2>
+            <form id="adminLoginForm" class="space-y-3">
+                <input type="text" id="adminUser" placeholder="Логін" class="w-full p-2 input-retro">
+                <input type="password" id="adminPass" placeholder="Пароль" class="w-full p-2 input-retro">
+                <div id="loginError" class="text-white bg-red-600 p-1 text-xs hidden text-center border border-black font-bold">Невірні дані</div>
+                <button type="submit" class="w-full py-2 bg-black text-white border-2 border-black hover:bg-gray-800 transition font-bold uppercase text-sm">Увійти</button>
+                <button type="button" onclick="showView('view-register')" class="w-full py-1 text-gray-500 hover:text-black text-xs font-bold underline">Назад</button>
             </form>
         </div>
 
         <!-- VIEW: ADMIN DASHBOARD -->
         <div id="view-admin-dash" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-lg">Адмін Панель</h2>
-                <button onclick="logoutAdmin()" class="text-xs text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt"></i> Вихід</button>
+            <div class="flex justify-between items-center mb-4 border-b-4 border-black pb-2">
+                <h2 class="retro-font text-lg text-black">Фейс-контроль</h2>
+                <button onclick="logoutAdmin()" class="text-[10px] text-red-600 hover:text-red-800 font-black uppercase tracking-wider border border-red-600 px-2 py-1 hover:bg-red-50"> Вихід <i class="fas fa-sign-out-alt ml-1"></i></button>
             </div>
 
             <!-- Tabs -->
-            <div class="flex space-x-2 mb-4">
-                <button onclick="switchAdminTab('scan')" id="tab-scan" class="flex-1 py-1 rounded bg-purple-600 text-white text-sm">Сканер</button>
-                <button onclick="switchAdminTab('list')" id="tab-list" class="flex-1 py-1 rounded bg-slate-700 text-gray-300 text-sm">Список</button>
+            <div class="flex space-x-0 mb-4 border-2 border-black">
+                <button onclick="switchAdminTab('scan')" id="tab-scan" class="flex-1 py-2 bg-yellow-300 text-black text-xs font-bold border-r-2 border-black hover:bg-yellow-400">СКАНЕР</button>
+                <button onclick="switchAdminTab('list')" id="tab-list" class="flex-1 py-2 bg-white text-gray-500 text-xs font-bold hover:bg-gray-100">СПИСОК</button>
             </div>
 
             <!-- Tab Content: Scanner -->
             <div id="admin-scan-content">
-                <div id="reader" class="bg-black"></div>
-                <div id="scanResult" class="mt-4 p-3 rounded-lg text-center hidden font-bold text-lg transition-all duration-300"></div>
+                <div id="reader" class="bg-gray-200 h-64"></div>
+                <div id="scanResult" class="mt-4 p-3 text-center hidden font-bold text-sm border-2 border-black shadow-[3px_3px_0px_#000]"></div>
                 <div class="mt-4 text-center">
-                    <button id="startScanBtn" class="bg-green-600 px-4 py-2 rounded text-sm">Увімкнути камеру</button>
-                    <button id="stopScanBtn" class="bg-red-600 px-4 py-2 rounded text-sm hidden">Вимкнути</button>
+                    <button id="startScanBtn" class="bg-green-500 text-black border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] text-sm">
+                        <i class="fas fa-camera mr-2"></i> Сканувати
+                    </button>
+                    <button id="stopScanBtn" class="bg-red-500 text-white border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] hidden text-sm">
+                        Зупинити
+                    </button>
                 </div>
             </div>
 
             <!-- Tab Content: List & Stats -->
-            <div id="admin-list-content" class="hidden h-96 overflow-y-auto">
+            <div id="admin-list-content" class="hidden h-80 overflow-y-auto pr-1">
                 <!-- Stats -->
                 <div class="grid grid-cols-3 gap-2 mb-4 text-center">
-                    <div class="bg-slate-800 p-2 rounded">
-                        <div class="text-xs text-gray-400">9 Клас</div>
-                        <div id="count9" class="font-bold text-purple-400">0</div>
+                    <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
+                        <div class="text-[9px] text-gray-500 uppercase font-bold">9 Клас</div>
+                        <div id="count9" class="text-lg text-pink-600 font-black">0</div>
                     </div>
-                    <div class="bg-slate-800 p-2 rounded">
-                        <div class="text-xs text-gray-400">10 Клас</div>
-                        <div id="count10" class="font-bold text-purple-400">0</div>
+                    <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
+                        <div class="text-[9px] text-gray-500 uppercase font-bold">10 Клас</div>
+                        <div id="count10" class="text-lg text-purple-600 font-black">0</div>
                     </div>
-                    <div class="bg-slate-800 p-2 rounded">
-                        <div class="text-xs text-gray-400">11 Клас</div>
-                        <div id="count11" class="font-bold text-purple-400">0</div>
+                    <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
+                        <div class="text-[9px] text-gray-500 uppercase font-bold">11 Клас</div>
+                        <div id="count11" class="text-lg text-blue-600 font-black">0</div>
                     </div>
                 </div>
-                <div class="flex justify-between text-xs text-gray-400 mb-2 px-1">
-                    <span>Всього: <span id="totalReg" class="text-white">0</span></span>
-                    <span>Пройшли: <span id="totalEntered" class="text-green-400">0</span></span>
+                
+                <div class="flex justify-between text-[10px] font-bold mb-2 px-1 border-b-2 border-gray-200 pb-2">
+                    <span>Всього: <span id="totalReg" class="text-black">0</span></span>
+                    <span>Прийшли: <span id="totalEntered" class="text-green-600">0</span></span>
                 </div>
 
                 <!-- Table -->
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-400 bg-slate-800 uppercase">
-                        <tr>
-                            <th class="px-2 py-2">Учень</th>
-                            <th class="px-2 py-2">Клас</th>
-                            <th class="px-2 py-2">Статус</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody">
+                <table class="w-full text-xs text-left">
+                    <tbody id="studentsTableBody" class="divide-y divide-black">
                         <!-- Rows generated by JS -->
                     </tbody>
                 </table>
@@ -206,9 +266,9 @@
     </div>
 
     <!-- Hidden Admin Trigger -->
-    <div class="fixed bottom-2 right-2 opacity-30 hover:opacity-100 transition">
-        <button onclick="showView('view-admin-login')" class="text-gray-500 hover:text-white p-2">
-            <i class="fas fa-user-shield"></i>
+    <div class="fixed bottom-2 right-2">
+        <button onclick="showView('view-admin-login')" class="text-black hover:text-pink-600 transition p-2 bg-yellow-300 border-2 border-black shadow-[2px_2px_0px_#000]">
+            <i class="fas fa-user-secret text-lg"></i>
         </button>
     </div>
 
@@ -240,8 +300,9 @@
         // UI HELPERS
         const showGlobalError = (msg) => {
             const el = document.getElementById('globalError');
-            el.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> ${msg}`;
+            el.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${msg}`;
             el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
         };
 
         // GLOBAL STATE
@@ -249,7 +310,6 @@
         let unsubscribeListeners = null;
 
         // AUTHENTICATION STRATEGY
-        // Anonymous auth for DB access
         signInAnonymously(auth).catch((err) => console.log("Anon auth failed:", err));
 
         // =======================
@@ -292,7 +352,7 @@
             // 1. CAPTCHA CHECK
             const captchaResponse = grecaptcha.getResponse();
             if (!captchaResponse) {
-                errorDiv.innerText = "Будь ласка, підтвердіть, що ви не робот (натисніть капчу).";
+                errorDiv.innerText = "Підтвердіть, що ви не робот!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -304,17 +364,16 @@
             const phone = document.getElementById('regPhone').value.trim();
 
             if (!firstName || !lastName || !grade || !phone) {
-                errorDiv.innerText = "Заповніть всі поля.";
+                errorDiv.innerText = "Заповніть всі поля!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Обробка...';
+            submitBtn.innerHTML = '<div class="loader"></div>';
 
             try {
                 // 3. Save Data to Firestore
-                // We use Anonymous Auth which must be enabled in Firebase Console
                 if (!auth.currentUser) await signInAnonymously(auth);
 
                 const docRef = await addDoc(collection(db, "guests"), {
@@ -332,9 +391,9 @@
                 document.getElementById('qrcode').innerHTML = "";
                 new QRCode(document.getElementById('qrcode'), {
                     text: guestId,
-                    width: 180,
-                    height: 180,
-                    colorDark : "#000000",
+                    width: 140, // Slightly smaller QR
+                    height: 140,
+                    colorDark : "#1a1a1a",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
@@ -347,17 +406,16 @@
                 showView('view-ticket');
                 localStorage.setItem('saved_ticket', guestId);
                 
-                // Reset form and captcha
                 registerForm.reset();
                 grecaptcha.reset();
 
             } catch (error) {
                 console.error("Registration Error:", error);
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Отримати квиток";
+                submitBtn.textContent = "Хочу на Дискотеку!";
                 
-                let msg = "Помилка реєстрації. Спробуйте ще раз.";
-                if (error.code === 'permission-denied') msg = "Помилка доступу. Перевірте налаштування бази даних.";
+                let msg = "Помилка реєстрації.";
+                if (error.code === 'permission-denied') msg = "Помилка доступу до бази.";
                 
                 errorDiv.innerHTML = msg;
                 errorDiv.classList.remove('hidden');
@@ -390,22 +448,29 @@
         }
 
         window.switchAdminTab = (tab) => {
-            if (tab === 'scan') {
-                document.getElementById('tab-scan').classList.replace('bg-slate-700', 'bg-purple-600');
-                document.getElementById('tab-scan').classList.replace('text-gray-300', 'text-white');
-                document.getElementById('tab-list').classList.replace('bg-purple-600', 'bg-slate-700');
-                document.getElementById('tab-list').classList.replace('text-white', 'text-gray-300');
-                
-                document.getElementById('admin-scan-content').classList.remove('hidden');
-                document.getElementById('admin-list-content').classList.add('hidden');
-            } else {
-                document.getElementById('tab-list').classList.replace('bg-slate-700', 'bg-purple-600');
-                document.getElementById('tab-list').classList.replace('text-gray-300', 'text-white');
-                document.getElementById('tab-scan').classList.replace('bg-purple-600', 'bg-slate-700');
-                document.getElementById('tab-scan').classList.replace('text-white', 'text-gray-300');
+            const btnScan = document.getElementById('tab-scan');
+            const btnList = document.getElementById('tab-list');
+            const viewScan = document.getElementById('admin-scan-content');
+            const viewList = document.getElementById('admin-list-content');
 
-                document.getElementById('admin-list-content').classList.remove('hidden');
-                document.getElementById('admin-scan-content').classList.add('hidden');
+            if (tab === 'scan') {
+                btnScan.classList.replace('bg-white', 'bg-yellow-300');
+                btnScan.classList.replace('text-gray-500', 'text-black');
+                
+                btnList.classList.replace('bg-yellow-300', 'bg-white');
+                btnList.classList.replace('text-black', 'text-gray-500');
+                
+                viewScan.classList.remove('hidden');
+                viewList.classList.add('hidden');
+            } else {
+                btnList.classList.replace('bg-white', 'bg-yellow-300');
+                btnList.classList.replace('text-gray-500', 'text-black');
+                
+                btnScan.classList.replace('bg-yellow-300', 'bg-white');
+                btnScan.classList.replace('text-black', 'text-gray-500');
+
+                viewList.classList.remove('hidden');
+                viewScan.classList.add('hidden');
             }
         }
 
@@ -419,7 +484,7 @@
                 html5QrCode = new Html5Qrcode("reader");
             }
             
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const config = { fps: 10, qrbox: { width: 220, height: 220 } };
             
             html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
             .then(() => {
@@ -446,9 +511,9 @@
             isProcessingScan = true;
 
             const resDiv = document.getElementById('scanResult');
-            resDiv.classList.remove('hidden', 'bg-green-500', 'bg-red-500', 'bg-yellow-500');
-            resDiv.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Перевірка...';
-            resDiv.classList.add('bg-slate-700');
+            resDiv.classList.remove('hidden', 'bg-green-300', 'bg-red-300', 'bg-yellow-300', 'text-white');
+            resDiv.innerHTML = '<div class="loader"></div>';
+            resDiv.className = "mt-4 p-3 text-center font-bold text-sm bg-white border-2 border-black shadow-[3px_3px_0px_#000]";
 
             try {
                 const docRef = doc(db, "guests", decodedText);
@@ -458,50 +523,60 @@
                     const data = docSnap.data();
                     
                     if (data.status === 'registered') {
-                        // SUCCESS: Allow Entry
+                        // SUCCESS
                         await updateDoc(docRef, {
                             status: 'entered',
                             enteredAt: serverTimestamp()
                         });
-                        resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-green-500 text-white";
-                        resDiv.innerHTML = `✅ ПРОХІД ДОЗВОЛЕНО<br><span class="text-sm">${data.firstName} ${data.lastName} (${data.grade} кл)</span>`;
+                        resDiv.className = "mt-4 p-3 text-center bg-green-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                        resDiv.innerHTML = `
+                            <div class="text-green-800 text-2xl mb-1"><i class="fas fa-thumbs-up"></i></div>
+                            <div class="font-black uppercase text-black text-lg">${data.firstName} ${data.lastName}</div>
+                            <div class="text-[10px] text-green-800 font-bold uppercase tracking-widest mt-1">ВХІД ДОЗВОЛЕНО (${data.grade} кл)</div>
+                        `;
                         playBeep(true);
                     } else if (data.status === 'entered') {
-                        // FAIL: Already Used
-                        resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-yellow-500 text-black";
-                        resDiv.innerHTML = `⚠️ КОД ВЖЕ ВИКОРИСТАНО<br><span class="text-sm">${data.firstName} ${data.lastName}</span><br><span class="text-xs">Вже увійшов</span>`;
+                        // ALREADY USED
+                        resDiv.className = "mt-4 p-3 text-center bg-yellow-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                        resDiv.innerHTML = `
+                            <div class="text-yellow-800 text-2xl mb-1"><i class="fas fa-hand-paper"></i></div>
+                            <div class="font-black uppercase text-black text-lg">${data.firstName} ${data.lastName}</div>
+                            <div class="text-[10px] text-yellow-800 font-bold uppercase tracking-widest mt-1">ВЖЕ ЗАЙШОВ!</div>
+                        `;
                         playBeep(false);
                     }
                 } else {
-                    // FAIL: Not Found
-                    resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-red-600 text-white";
-                    resDiv.innerText = "⛔ КОД НЕ ЗНАЙДЕНО";
+                    // NOT FOUND
+                    resDiv.className = "mt-4 p-3 text-center bg-red-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                    resDiv.innerHTML = `
+                        <div class="text-red-800 text-2xl mb-1"><i class="fas fa-ban"></i></div>
+                        <div class="font-black text-red-800 uppercase tracking-widest text-xs">ФАЛЬШИВКА!</div>
+                    `;
                     playBeep(false);
                 }
             } catch (err) {
                 console.error(err);
-                resDiv.className = "mt-4 p-4 rounded-lg text-center font-bold text-lg bg-red-600 text-white";
-                resDiv.innerText = "Помилка доступу до бази";
+                resDiv.innerText = "Помилка";
             }
 
-            // Cooldown before next scan
             setTimeout(() => {
                 isProcessingScan = false;
-            }, 2500);
+            }, 3000);
         };
 
         function playBeep(success) {
             const context = new (window.AudioContext || window.webkitAudioContext)();
             const osc = context.createOscillator();
-            osc.type = success ? 'sine' : 'sawtooth';
-            osc.frequency.value = success ? 800 : 200;
+            osc.type = success ? 'square' : 'sawtooth'; // Retro sounds
+            osc.frequency.value = success ? 880 : 150;
             osc.connect(context.destination);
             osc.start();
-            osc.stop(context.currentTime + 0.2);
+            osc.stop(context.currentTime + 0.15);
             if(success) {
                 setTimeout(() => {
                     const osc2 = context.createOscillator();
-                    osc2.frequency.value = 1200;
+                    osc2.type = 'square';
+                    osc2.frequency.value = 1760;
                     osc2.connect(context.destination);
                     osc2.start();
                     osc2.stop(context.currentTime + 0.1);
@@ -513,7 +588,7 @@
         // DASHBOARD DATA LISTENER
         // =======================
         function initAdminDashboard() {
-            if (unsubscribeListeners) return; // Already listening
+            if (unsubscribeListeners) return;
 
             const q = query(collection(db, "guests"), orderBy("createdAt", "desc"));
             
@@ -521,30 +596,28 @@
                 const tableBody = document.getElementById('studentsTableBody');
                 let c9 = 0, c10 = 0, c11 = 0;
                 let entered = 0;
-                
                 let html = '';
 
                 snapshot.docs.forEach(doc => {
                     const d = doc.data();
                     
-                    // Count stats
                     if (d.grade == '9') c9++;
                     if (d.grade == '10') c10++;
                     if (d.grade == '11') c11++;
                     if (d.status === 'entered') entered++;
 
-                    const statusColor = d.status === 'entered' ? 'text-green-400' : 'text-yellow-400';
-                    const statusText = d.status === 'entered' ? 'В залі' : 'Зареєстр.';
-                    const rowBg = d.status === 'entered' ? 'bg-slate-800/50' : '';
+                    const statusBadge = d.status === 'entered' 
+                        ? '<span class="px-2 py-1 bg-green-200 text-black border border-black rounded-none text-[9px] font-bold uppercase">Є</span>' 
+                        : '<span class="px-2 py-1 bg-gray-100 text-gray-500 border border-gray-300 rounded-none text-[9px] font-bold uppercase">Нема</span>';
 
                     html += `
-                        <tr class="border-b border-slate-700 ${rowBg}">
-                            <td class="px-2 py-3 font-medium text-white">
-                                ${d.firstName} ${d.lastName}
-                                <div class="text-xs text-gray-500">${d.phone}</div>
+                        <tr class="hover:bg-yellow-50 transition border-b border-black">
+                            <td class="px-1 py-2">
+                                <div class="font-bold text-black uppercase text-xs">${d.firstName} ${d.lastName}</div>
+                                <div class="text-[9px] text-gray-500 font-mono">${d.phone}</div>
                             </td>
-                            <td class="px-2 py-3">${d.grade}</td>
-                            <td class="px-2 py-3 ${statusColor} font-bold text-xs uppercase">${statusText}</td>
+                            <td class="px-1 py-2 text-xs font-bold text-black border-l border-black text-center">${d.grade}</td>
+                            <td class="px-1 py-2 text-right border-l border-black">${statusBadge}</td>
                         </tr>
                     `;
                 });
@@ -557,7 +630,6 @@
                 document.getElementById('totalEntered').innerText = entered;
             }, (error) => {
                  console.error("Dashboard Error:", error);
-                 alert("Не вдалося завантажити список. Перевірте консоль Firebase (Rules).");
             });
         }
 
