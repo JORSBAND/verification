@@ -96,9 +96,63 @@
             margin: 0 auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- DISCO ANIMATIONS --- */
+        @keyframes disco-flash {
+            0% { background-color: #000; }
+            20% { background-color: #1e1b4b; } /* Indigo */
+            40% { background-color: #4c0519; } /* Rose */
+            60% { background-color: #064e3b; } /* Emerald */
+            80% { background-color: #4a044e; } /* Fuchsia */
+            100% { background-color: #000; }
+        }
+        
+        @keyframes disco-spin {
+            0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+            50% { transform: rotate(180deg) scale(1.1); filter: hue-rotate(90deg); }
+            100% { transform: rotate(360deg) scale(1); filter: hue-rotate(0deg); }
+        }
+
+        @keyframes text-zoom {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .disco-bg-active {
+            animation: disco-flash 0.8s infinite;
+        }
+
+        .disco-ball-icon {
+            font-size: 8rem;
+            background: -webkit-linear-gradient(#eee, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+            animation: disco-spin 2s linear infinite;
+        }
+        
+        .date-pop {
+            animation: text-zoom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
+
+    <!-- DISCO OVERLAY -->
+    <div id="discoOverlay" class="fixed inset-0 z-[100] hidden flex flex-col items-center justify-center overflow-hidden">
+        <!-- Background beams (optional visual flair) -->
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+        
+        <div class="relative z-10 text-center">
+            <i class="fas fa-compact-disc disco-ball-icon mb-8 block mx-auto text-white"></i>
+            
+            <h1 class="text-6xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 via-pink-500 to-cyan-400 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] date-pop leading-none">
+                30<br>ГРУДНЯ
+            </h1>
+            <p class="text-white font-mono mt-4 text-xl font-bold animate-pulse">DISCO TIME!</p>
+        </div>
+    </div>
 
     <!-- GLOBAL ERROR MESSAGE -->
     <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-3 text-center hidden z-50 shadow-lg font-bold border-b-4 border-black text-sm">
@@ -352,6 +406,77 @@
         showView('view-register');
 
         // =======================
+        // DISCO & AUDIO LOGIC
+        // =======================
+        let audioCtx;
+        
+        function playDiscoTune() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Simple retro funky beat generator
+            const now = audioCtx.currentTime;
+            
+            // Bass line (Square wave)
+            const bass = audioCtx.createOscillator();
+            const bassGain = audioCtx.createGain();
+            bass.type = 'square';
+            bass.connect(bassGain);
+            bassGain.connect(audioCtx.destination);
+            
+            // Melody (Sawtooth)
+            const lead = audioCtx.createOscillator();
+            const leadGain = audioCtx.createGain();
+            lead.type = 'sawtooth';
+            lead.connect(leadGain);
+            leadGain.connect(audioCtx.destination);
+            
+            // Notes frequencies: C2, E2, G2, A2 | C5, E5
+            const bassNotes = [65.41, 82.41, 98.00, 110.00]; 
+            const leadNotes = [523.25, 659.25, 783.99, 1046.50];
+
+            // Sequence loop for 3 seconds
+            for (let i = 0; i < 8; i++) {
+                let t = now + i * 0.25;
+                
+                // Bass
+                bass.frequency.setValueAtTime(bassNotes[i % 4], t);
+                bassGain.gain.setValueAtTime(0.3, t);
+                bassGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                
+                // Lead (Offbeat)
+                if (i % 2 !== 0) {
+                   lead.frequency.setValueAtTime(leadNotes[i % 4], t);
+                   leadGain.gain.setValueAtTime(0.1, t);
+                   leadGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                }
+            }
+
+            bass.start(now);
+            bass.stop(now + 3); // 3 seconds total
+            
+            lead.start(now);
+            lead.stop(now + 3);
+        }
+
+        async function runDiscoSequence(callback) {
+            const overlay = document.getElementById('discoOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('disco-bg-active');
+            
+            // Start Music
+            try {
+                playDiscoTune();
+            } catch(e) { console.log("Audio play failed", e); }
+            
+            // Wait 3 seconds
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('disco-bg-active');
+                if (callback) callback();
+            }, 3500); // 3.5 seconds
+        }
+
+        // =======================
         // STUDENT REGISTRATION
         // =======================
         const registerForm = document.getElementById('registerForm');
@@ -382,57 +507,63 @@
                 return;
             }
 
+            // --- START DISCO SEQUENCE HERE ---
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loader"></div>';
+            submitBtn.innerHTML = '<i class="fas fa-compact-disc fa-spin"></i> ЗАЧЕКАЙТЕ...';
 
-            try {
-                // 3. Save Data to Firestore
-                if (!auth.currentUser) await signInAnonymously(auth);
-
-                const docRef = await addDoc(collection(db, "guests"), {
-                    firstName,
-                    lastName,
-                    grade,
-                    phone,
-                    uid: auth.currentUser ? auth.currentUser.uid : 'anon',
-                    status: 'registered',
-                    createdAt: serverTimestamp()
-                });
-
-                // 4. Generate QR
-                const guestId = docRef.id;
-                document.getElementById('qrcode').innerHTML = "";
-                new QRCode(document.getElementById('qrcode'), {
-                    text: guestId,
-                    width: 140, // Slightly smaller QR
-                    height: 140,
-                    colorDark : "#1a1a1a",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-
-                // 5. Show Ticket
-                document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
-                document.getElementById('ticketGrade').textContent = `${grade} Клас`;
-                document.getElementById('ticketId').textContent = guestId;
-
-                showView('view-ticket');
-                localStorage.setItem('saved_ticket', guestId);
+            // Wait for sequence, THEN submit to Firebase
+            await runDiscoSequence(async () => {
+                submitBtn.innerHTML = '<div class="loader"></div>';
                 
-                registerForm.reset();
-                grecaptcha.reset();
+                try {
+                    // 3. Save Data to Firestore
+                    if (!auth.currentUser) await signInAnonymously(auth);
 
-            } catch (error) {
-                console.error("Registration Error:", error);
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Хочу на Дискотеку!";
-                
-                let msg = "Помилка реєстрації.";
-                if (error.code === 'permission-denied') msg = "Помилка доступу до бази.";
-                
-                errorDiv.innerHTML = msg;
-                errorDiv.classList.remove('hidden');
-            }
+                    const docRef = await addDoc(collection(db, "guests"), {
+                        firstName,
+                        lastName,
+                        grade,
+                        phone,
+                        uid: auth.currentUser ? auth.currentUser.uid : 'anon',
+                        status: 'registered',
+                        createdAt: serverTimestamp()
+                    });
+
+                    // 4. Generate QR
+                    const guestId = docRef.id;
+                    document.getElementById('qrcode').innerHTML = "";
+                    new QRCode(document.getElementById('qrcode'), {
+                        text: guestId,
+                        width: 140, // Slightly smaller QR
+                        height: 140,
+                        colorDark : "#1a1a1a",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    // 5. Show Ticket
+                    document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
+                    document.getElementById('ticketGrade').textContent = `${grade} Клас`;
+                    document.getElementById('ticketId').textContent = guestId;
+
+                    showView('view-ticket');
+                    localStorage.setItem('saved_ticket', guestId);
+                    
+                    registerForm.reset();
+                    grecaptcha.reset();
+
+                } catch (error) {
+                    console.error("Registration Error:", error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "ОТРИМАТИ КВИТОК!";
+                    
+                    let msg = "Помилка реєстрації.";
+                    if (error.code === 'permission-denied') msg = "Помилка доступу до бази.";
+                    
+                    errorDiv.innerHTML = msg;
+                    errorDiv.classList.remove('hidden');
+                }
+            });
         });
 
         // =======================
