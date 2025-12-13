@@ -68,10 +68,21 @@
             box-shadow: 0px 0px 0px #1a1a1a;
         }
 
+        /* Fixed Scanner Styles */
         #reader {
             width: 100%;
+            min-height: 250px; /* Minimum height to prevent collapse */
             border: 3px solid #1a1a1a;
             box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+            overflow: hidden !important; /* Crucial: cuts off overflowing video */
+            background: #000;
+            position: relative;
+        }
+        
+        #reader video {
+            object-fit: cover;
+            width: 100% !important;
+            height: 100% !important;
         }
         
         /* Loader */
@@ -219,7 +230,9 @@
 
             <!-- Tab Content: Scanner -->
             <div id="admin-scan-content">
-                <div id="reader" class="bg-gray-200 h-64"></div>
+                <!-- Removed class h-64, relying on CSS min-height -->
+                <div id="reader"></div>
+                
                 <div id="scanResult" class="mt-4 p-3 text-center hidden font-bold text-sm border-2 border-black shadow-[3px_3px_0px_#000]"></div>
                 <div class="mt-4 text-center">
                     <button id="startScanBtn" class="bg-green-500 text-black border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] text-sm">
