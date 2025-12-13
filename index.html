@@ -97,15 +97,30 @@
         .stage-text {
             position: absolute;
             width: 100%;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             top: 50%;
             transform: translateY(-50%);
             display: none; /* Hidden by default */
-            z-index: 20;
+            z-index: 50; /* Higher than confetti (5) */
+        }
+
+        /* Text container for better readability */
+        .text-backdrop {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+            margin: 0 20px;
+            max-width: 90%;
         }
 
         .neon-text-large {
-            font-size: 3rem;
+            font-size: 2.5rem;
             line-height: 1.1;
             font-weight: 900;
             color: #fff;
@@ -123,14 +138,14 @@
             color: #0ff;
             font-size: 1.5rem;
             text-shadow: 2px 2px 0 #000;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         /* Disco Ball Spin */
         .disco-ball-img {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
             animation: spinBall 4s linear infinite;
         }
         @keyframes spinBall { 100% { transform: rotate(360deg); } }
@@ -154,8 +169,10 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
 
     <!-- AUDIO ELEMENT (Hidden) -->
-    <!-- Royalty Free Funky/Disco Track -->
-    <audio id="discoAudio" src="https://cdn.pixabay.com/download/audio/2023/10/24/audio_34d6cb6002.mp3?filename=funky-disco-house-172458.mp3" preload="auto"></audio>
+    <!-- New Audio Source (More reliable, direct MP3) -->
+    <audio id="discoAudio" preload="auto">
+        <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- PROFESSIONAL ANIMATION OVERLAY -->
     <div id="discoOverlay" class="fixed inset-0 z-[100] hidden overflow-hidden">
@@ -170,27 +187,33 @@
 
         <!-- STAGE 1: Intro -->
         <div id="stage1" class="stage-text">
-            <h2 class="sub-neon animate__animated animate__zoomIn">Готуй вбрання...</h2>
+            <div class="text-backdrop animate__animated animate__zoomIn">
+                <h2 class="sub-neon">Готуй вбрання...</h2>
+            </div>
         </div>
 
         <!-- STAGE 2: Build Up -->
         <div id="stage2" class="stage-text">
-            <h2 class="sub-neon animate__animated animate__backInLeft">Це буде...</h2>
-            <div class="text-6xl font-black text-yellow-300 transform rotate-[-5deg] animate__animated animate__pulse animate__infinite">КРУТО!</div>
+            <div class="text-backdrop animate__animated animate__backInLeft flex flex-col items-center">
+                <h2 class="sub-neon">Це буде...</h2>
+                <div class="text-5xl sm:text-6xl font-black text-yellow-300 transform rotate-[-5deg] animate__animated animate__pulse animate__infinite mt-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">КРУТО!</div>
+            </div>
         </div>
 
         <!-- STAGE 3: Main Event -->
         <div id="stage3" class="stage-text">
-            <img src="https://cdn-icons-png.flaticon.com/512/2452/2452243.png" class="disco-ball-img filter drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]" alt="Disco Ball">
-            
-            <div class="sub-neon animate__animated animate__fadeInDown">ЛАСКАВО ПРОСИМО</div>
-            
-            <h1 class="neon-text-large animate__animated animate__zoomInDown mb-2">
-                ВЕСІЛЬНА<br>ДИСКОТЕКА
-            </h1>
-            
-            <div class="inline-block bg-yellow-400 text-black font-black text-2xl px-4 py-1 transform skew-x-[-10deg] animate__animated animate__rubberBand animate__delay-1s">
-                30 ГРУДНЯ
+            <div class="text-backdrop animate__animated animate__fadeInDown text-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/2452/2452243.png" class="disco-ball-img filter drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]" alt="Disco Ball">
+                
+                <div class="sub-neon">ЛАСКАВО ПРОСИМО</div>
+                
+                <h1 class="neon-text-large animate__animated animate__zoomInDown mb-4">
+                    ВЕСІЛЬНА<br>ДИСКОТЕКА
+                </h1>
+                
+                <div class="inline-block bg-yellow-400 text-black font-black text-xl sm:text-2xl px-6 py-2 transform skew-x-[-10deg] shadow-[4px_4px_0_rgba(0,0,0,1)] animate__animated animate__rubberBand animate__delay-1s">
+                    30 ГРУДНЯ
+                </div>
             </div>
         </div>
 
@@ -417,14 +440,18 @@
             
             // Reset styles
             [s1, s2, s3].forEach(el => el.style.display = 'none');
+            
+            // Force display block to enable flex/center styles immediately
+            s1.style.display = 'flex';
+            
             overlay.classList.remove('hidden');
             overlay.classList.add('pulse-bg');
 
             // 1. START AUDIO
             try {
                 audio.currentTime = 0;
-                audio.play();
-            } catch(e) { console.log("Audio permission needed", e); }
+                audio.play().catch(e => console.log("Autoplay prevented:", e));
+            } catch(e) { console.log("Audio play failed", e); }
 
             // 2. TIMELINE OF EVENTS (Total ~9 seconds)
             
@@ -432,19 +459,18 @@
             fireConfetti();
             let confettiInterval = setInterval(fireConfetti, 400); // Continuous confetti
 
-            // 0.5s: Stage 1 "Готуй вбрання"
-            setTimeout(() => { s1.style.display = 'block'; }, 500);
-
+            // 0s: Stage 1 "Готуй вбрання" (already shown via display:flex above)
+            
             // 2.5s: Hide S1, Show S2 "Це буде..."
             setTimeout(() => { 
                 s1.style.display = 'none'; 
-                s2.style.display = 'block';
+                s2.style.display = 'flex';
             }, 2500);
 
             // 4.5s: The Drop! Hide S2, Show S3 "WELCOME"
             setTimeout(() => {
                 s2.style.display = 'none';
-                s3.style.display = 'block';
+                s3.style.display = 'flex';
                 // Intense confetti
                 clearInterval(confettiInterval);
                 confettiInterval = setInterval(fireConfetti, 100); 
@@ -494,6 +520,16 @@
                 errorDiv.classList.remove('hidden');
                 return;
             }
+
+            // ATTEMPT TO UNLOCK AUDIO ON USER INTERACTION
+            // Browsers allow audio.play() inside click handlers.
+            // We call play() here and pause() to unlock it, then reset time.
+            try {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(err => console.log("Audio unlock failed (will try again in sequence):", err));
+            } catch (err) {}
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Вантажимо...';
