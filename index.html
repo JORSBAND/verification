@@ -257,10 +257,10 @@
         let recaptchaVerifier = null;
 
         // AUTHENTICATION STRATEGY
-        // Start anonymous auth for initial load/admin check, but handle switch to phone auth gracefully
+        // Start anonymous auth for initial load/admin check
         signInAnonymously(auth).catch((err) => console.log("Anon auth skipped/failed (normal for phone flow):", err));
 
-        // RESET RECAPTCHA FUNCTION
+        // RESET RECAPTCHA FUNCTION - MORE ROBUST
         function resetRecaptcha() {
             if (recaptchaVerifier) {
                 try {
@@ -271,26 +271,8 @@
                 recaptchaVerifier = null;
             }
             // Clear DOM container manually to be safe
-            document.getElementById('recaptcha-container').innerHTML = '';
-        }
-
-        // SETUP RECAPTCHA
-        function setupRecaptcha() {
-            if (!recaptchaVerifier) {
-                recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                    'size': 'normal',
-                    'callback': (response) => {
-                        // reCAPTCHA solved, allow signInWithPhoneNumber.
-                        console.log("Captcha solved");
-                    },
-                    'expired-callback': () => {
-                        // Response expired. Ask user to solve reCAPTCHA again.
-                        console.log("Captcha expired");
-                        resetRecaptcha();
-                    }
-                });
-            }
-            return recaptchaVerifier;
+            const container = document.getElementById('recaptcha-container');
+            if(container) container.innerHTML = '';
         }
 
         // =======================
@@ -315,12 +297,9 @@
                 }
             }
 
-            // Cleanup recaptcha if leaving register view (optional but good for stability)
-            if (viewId !== 'view-register') {
+            // Always reset recaptcha when changing views to ensure fresh DOM
+            if (viewId === 'view-register') {
                  resetRecaptcha();
-            } else {
-                // Pre-init captcha after a short delay to ensure DOM is ready
-                setTimeout(setupRecaptcha, 500);
             }
         }
         
@@ -355,9 +334,26 @@
                 submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Надсилання...';
 
                 try {
-                    // Ensure verifier exists
-                    const appVerifier = setupRecaptcha();
-                    
+                    // FORCE RESET BEFORE NEW ATTEMPT
+                    resetRecaptcha();
+
+                    // CREATE NEW VERIFIER
+                    const appVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                        'size': 'normal',
+                        'callback': (response) => {
+                            // reCAPTCHA solved
+                            console.log("Captcha solved");
+                        },
+                        'expired-callback': () => {
+                            console.log("Captcha expired");
+                            resetRecaptcha();
+                        }
+                    });
+
+                    // EXPLICIT RENDER (Fixes internal-error)
+                    await appVerifier.render();
+
+                    // SEND SMS
                     confirmationResult = await signInWithPhoneNumber(auth, phone, appVerifier);
                     
                     // UI Transition to Step 2
@@ -366,6 +362,9 @@
                     submitBtn.textContent = "Підтвердити та отримати квиток";
                     submitBtn.disabled = false;
                     
+                    // Keep reference for cleanup
+                    recaptchaVerifier = appVerifier;
+
                 } catch (error) {
                     console.error("SMS Error:", error);
                     submitBtn.disabled = false;
@@ -376,14 +375,13 @@
                     if (error.code === 'auth/too-many-requests') msg = "Забагато спроб. Спробуйте пізніше.";
                     if (error.message.includes('billing') || error.code === 'auth/quota-exceeded') msg = "Ліміт SMS вичерпано. Зверніться до адміністратора.";
                     if (error.code === 'auth/captcha-check-failed') msg = "Помилка капчі. Спробуйте знову.";
-                    if (error.code === 'auth/internal-error') msg = "Внутрішня помилка. Оновіть сторінку і спробуйте знову.";
+                    if (error.code === 'auth/internal-error') msg = "Помилка з'єднання. Оновіть сторінку і спробуйте знову.";
                     
                     errorDiv.innerHTML = msg;
                     errorDiv.classList.remove('hidden');
                     
-                    // Critical: Reset Recaptcha on error so user can try again
+                    // Reset Recaptcha on error so user can try again immediately
                     resetRecaptcha();
-                    setTimeout(setupRecaptcha, 100); // Re-init fresh
                 }
 
             } else {
