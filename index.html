@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
@@ -86,30 +88,22 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Телефон (для SMS)</label>
+                        <label class="block text-sm font-medium text-gray-300">Телефон</label>
                         <input type="tel" id="regPhone" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="+380991234567" value="+380">
-                        <p class="text-xs text-gray-500 mt-1">Введіть повний номер з кодом країни (+380...)</p>
+                        <p class="text-xs text-gray-500 mt-1">Введіть номер для зв'язку</p>
                     </div>
                     
-                    <!-- ReCaptcha Container -->
-                    <div id="recaptcha-container" class="flex justify-center my-4 min-h-[78px]"></div>
-                </div>
-
-                <!-- Step 2: SMS Code (Hidden initially) -->
-                <div id="step-verify" class="hidden space-y-4 animate-fade-in">
-                     <div class="bg-blue-500/20 text-blue-300 p-3 rounded text-sm border border-blue-500/30">
-                        <i class="fas fa-sms mr-2"></i> Код відправлено на ваш номер!
-                     </div>
-                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Код з SMS</label>
-                        <input type="number" id="smsCode" class="w-full mt-1 p-3 text-center text-xl tracking-widest rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="123456">
+                    <!-- ReCaptcha Container (Standard Google Widget) -->
+                    <!-- NOTE: Replace data-sitekey with your own from Google Recaptcha Admin console for production -->
+                    <div class="flex justify-center my-4">
+                        <div class="g-recaptcha" data-sitekey="6LeKzCosAAAAALIF_wFbmz3PKZPQZ2nRfAHUxUn4"></div>
                     </div>
                 </div>
 
                 <div id="regError" class="text-red-400 text-sm text-center hidden p-2 bg-red-900/50 rounded border border-red-500/50"></div>
                 
                 <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold hover:opacity-90 transition transform active:scale-95">
-                    Надіслати код підтвердження
+                    Отримати квиток
                 </button>
             </form>
         </div>
@@ -222,7 +216,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // CONFIGURATION
         const firebaseConfig = {
@@ -253,27 +247,10 @@
         // GLOBAL STATE
         let html5QrCode;
         let unsubscribeListeners = null;
-        let confirmationResult = null; // Store phone auth result
-        let recaptchaVerifier = null;
 
         // AUTHENTICATION STRATEGY
-        // Start anonymous auth for initial load/admin check
-        signInAnonymously(auth).catch((err) => console.log("Anon auth skipped/failed (normal for phone flow):", err));
-
-        // RESET RECAPTCHA FUNCTION - MORE ROBUST
-        function resetRecaptcha() {
-            if (recaptchaVerifier) {
-                try {
-                    recaptchaVerifier.clear();
-                } catch (e) {
-                    console.log("Error clearing recaptcha", e);
-                }
-                recaptchaVerifier = null;
-            }
-            // Clear DOM container manually to be safe
-            const container = document.getElementById('recaptcha-container');
-            if(container) container.innerHTML = '';
-        }
+        // Anonymous auth for DB access
+        signInAnonymously(auth).catch((err) => console.log("Anon auth failed:", err));
 
         // =======================
         // VIEW NAVIGATION
@@ -296,18 +273,13 @@
                     unsubscribeListeners = null;
                 }
             }
-
-            // Always reset recaptcha when changing views to ensure fresh DOM
-            if (viewId === 'view-register') {
-                 resetRecaptcha();
-            }
         }
         
         // Init setup on load
         showView('view-register');
 
         // =======================
-        // STUDENT REGISTRATION (2-STEP)
+        // STUDENT REGISTRATION
         // =======================
         const registerForm = document.getElementById('registerForm');
         const submitBtn = document.getElementById('regSubmitBtn');
@@ -317,129 +289,78 @@
             e.preventDefault();
             errorDiv.classList.add('hidden');
             
-            // Check if we are in Step 1 (Send Code) or Step 2 (Verify Code)
-            const isStep2 = !document.getElementById('step-verify').classList.contains('hidden');
+            // 1. CAPTCHA CHECK
+            const captchaResponse = grecaptcha.getResponse();
+            if (!captchaResponse) {
+                errorDiv.innerText = "Будь ласка, підтвердіть, що ви не робот (натисніть капчу).";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
 
-            if (!isStep2) {
-                // --- STEP 1: SEND SMS ---
-                const phone = document.getElementById('regPhone').value.trim();
+            // 2. FORM DATA
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const grade = document.getElementById('regGrade').value;
+            const phone = document.getElementById('regPhone').value.trim();
+
+            if (!firstName || !lastName || !grade || !phone) {
+                errorDiv.innerText = "Заповніть всі поля.";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Обробка...';
+
+            try {
+                // 3. Save Data to Firestore
+                // We use Anonymous Auth which must be enabled in Firebase Console
+                if (!auth.currentUser) await signInAnonymously(auth);
+
+                const docRef = await addDoc(collection(db, "guests"), {
+                    firstName,
+                    lastName,
+                    grade,
+                    phone,
+                    uid: auth.currentUser ? auth.currentUser.uid : 'anon',
+                    status: 'registered',
+                    createdAt: serverTimestamp()
+                });
+
+                // 4. Generate QR
+                const guestId = docRef.id;
+                document.getElementById('qrcode').innerHTML = "";
+                new QRCode(document.getElementById('qrcode'), {
+                    text: guestId,
+                    width: 180,
+                    height: 180,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+
+                // 5. Show Ticket
+                document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
+                document.getElementById('ticketGrade').textContent = `${grade} Клас`;
+                document.getElementById('ticketId').textContent = guestId;
+
+                showView('view-ticket');
+                localStorage.setItem('saved_ticket', guestId);
                 
-                if (phone.length < 10) {
-                    errorDiv.innerText = "Будь ласка, введіть коректний номер телефону (+380...)";
-                    errorDiv.classList.remove('hidden');
-                    return;
-                }
+                // Reset form and captcha
+                registerForm.reset();
+                grecaptcha.reset();
 
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Надсилання...';
-
-                try {
-                    // FORCE RESET BEFORE NEW ATTEMPT
-                    resetRecaptcha();
-
-                    // CREATE NEW VERIFIER
-                    const appVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                        'size': 'normal',
-                        'callback': (response) => {
-                            // reCAPTCHA solved
-                            console.log("Captcha solved");
-                        },
-                        'expired-callback': () => {
-                            console.log("Captcha expired");
-                            resetRecaptcha();
-                        }
-                    });
-
-                    // EXPLICIT RENDER (Fixes internal-error)
-                    await appVerifier.render();
-
-                    // SEND SMS
-                    confirmationResult = await signInWithPhoneNumber(auth, phone, appVerifier);
-                    
-                    // UI Transition to Step 2
-                    document.getElementById('step-data').classList.add('hidden'); // Hide data inputs
-                    document.getElementById('step-verify').classList.remove('hidden'); // Show code input
-                    submitBtn.textContent = "Підтвердити та отримати квиток";
-                    submitBtn.disabled = false;
-                    
-                    // Keep reference for cleanup
-                    recaptchaVerifier = appVerifier;
-
-                } catch (error) {
-                    console.error("SMS Error:", error);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Надіслати код підтвердження";
-                    
-                    let msg = "Помилка надсилання SMS.";
-                    if (error.code === 'auth/invalid-phone-number') msg = "Невірний формат номеру.";
-                    if (error.code === 'auth/too-many-requests') msg = "Забагато спроб. Спробуйте пізніше.";
-                    if (error.message.includes('billing') || error.code === 'auth/quota-exceeded') msg = "Ліміт SMS вичерпано. Зверніться до адміністратора.";
-                    if (error.code === 'auth/captcha-check-failed') msg = "Помилка капчі. Спробуйте знову.";
-                    if (error.code === 'auth/internal-error') msg = "Помилка з'єднання. Оновіть сторінку і спробуйте знову.";
-                    
-                    errorDiv.innerHTML = msg;
-                    errorDiv.classList.remove('hidden');
-                    
-                    // Reset Recaptcha on error so user can try again immediately
-                    resetRecaptcha();
-                }
-
-            } else {
-                // --- STEP 2: VERIFY CODE & REGISTER ---
-                const code = document.getElementById('smsCode').value.trim();
-                if (!code) return;
-
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Перевірка...';
-
-                try {
-                    // 1. Verify SMS Code
-                    const result = await confirmationResult.confirm(code);
-                    const user = result.user; // User is now logged in with phone
-
-                    // 2. Save Data to Firestore
-                    const firstName = document.getElementById('regFirstName').value.trim();
-                    const lastName = document.getElementById('regLastName').value.trim();
-                    const grade = document.getElementById('regGrade').value;
-                    const phone = document.getElementById('regPhone').value.trim();
-
-                    const docRef = await addDoc(collection(db, "guests"), {
-                        firstName,
-                        lastName,
-                        grade,
-                        phone,
-                        uid: user.uid, // Store Firebase Auth UID
-                        status: 'registered',
-                        createdAt: serverTimestamp()
-                    });
-
-                    // 3. Generate QR
-                    const guestId = docRef.id;
-                    document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById('qrcode'), {
-                        text: guestId,
-                        width: 180,
-                        height: 180,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
-
-                    // 4. Show Ticket
-                    document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
-                    document.getElementById('ticketGrade').textContent = `${grade} Клас`;
-                    document.getElementById('ticketId').textContent = guestId;
-
-                    showView('view-ticket');
-                    localStorage.setItem('saved_ticket', guestId);
-
-                } catch (error) {
-                    console.error("Verify Error:", error);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Підтвердити та отримати квиток";
-                    errorDiv.innerText = "Невірний код або помилка запису. Спробуйте ще раз.";
-                    errorDiv.classList.remove('hidden');
-                }
+            } catch (error) {
+                console.error("Registration Error:", error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Отримати квиток";
+                
+                let msg = "Помилка реєстрації. Спробуйте ще раз.";
+                if (error.code === 'permission-denied') msg = "Помилка доступу. Перевірте налаштування бази даних.";
+                
+                errorDiv.innerHTML = msg;
+                errorDiv.classList.remove('hidden');
             }
         });
 
