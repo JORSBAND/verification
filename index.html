@@ -4,20 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Весільна Дискотека 80-х</title>
-    
-    <!-- Libraries -->
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- Google reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <!-- Animate.css for professional text entrances -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ruslan+Display&family=Montserrat:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Ruslan+Display&family=Montserrat:wght@400;700&display=swap');
 
-        /* Base Styles */
+        /* Background matched to the peach color of your collage */
         body {
             background-color: #fcece4; 
             color: #1a1a1a;
@@ -26,12 +27,14 @@
             background-size: 20px 20px;
         }
         
-        h1, h2, .retro-font { font-family: 'Ruslan Display', cursive; }
+        h1, h2, .retro-font {
+            font-family: 'Ruslan Display', cursive; /* Retro style font */
+        }
 
         .wedding-card {
             background: rgba(255, 255, 255, 0.95);
             border: 2px solid #1a1a1a;
-            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8);
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8); /* Slightly smaller shadow for mobile */
             border-radius: 0;
         }
 
@@ -39,196 +42,81 @@
             background-color: #fff;
             border: 2px solid #1a1a1a;
             color: #1a1a1a;
+            transition: all 0.2s ease;
             font-weight: bold;
         }
-        .input-retro:focus { outline: none; border-color: #d946ef; box-shadow: 0 0 0 2px #d946ef; }
+        .input-retro:focus {
+            box-shadow: 4px 4px 0px #d4af37;
+            outline: none;
+            border-color: #1a1a1a;
+        }
 
         .btn-retro {
-            background-color: #d946ef;
+            background-color: #d946ef; /* Bright pink */
             border: 2px solid #1a1a1a;
             color: white;
             text-transform: uppercase;
             box-shadow: 4px 4px 0px #1a1a1a;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: all 0.1s;
         }
-        .btn-retro:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #1a1a1a; }
-
-        /* --- PROFESSIONAL DISCO ANIMATION STYLES --- */
-        #discoOverlay {
-            background: radial-gradient(circle at center, #2e0228 0%, #000000 100%);
-            perspective: 1000px;
+        .btn-retro:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #1a1a1a;
         }
-
-        /* Spotlight Effect */
-        .spotlight {
-            position: absolute;
-            top: -50%;
-            left: 50%;
-            width: 200px;
-            height: 200%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, transparent 80%);
-            transform-origin: top center;
-            animation: swing 3s infinite ease-in-out alternate;
-            pointer-events: none;
-            z-index: 1;
-        }
-        .spotlight:nth-child(2) { animation-delay: -1.5s; left: 30%; background: linear-gradient(to bottom, rgba(255,0,255,0.3) 0%, transparent 80%); }
-        .spotlight:nth-child(3) { animation-delay: -0.5s; left: 70%; background: linear-gradient(to bottom, rgba(0,255,255,0.3) 0%, transparent 80%); }
-
-        @keyframes swing {
-            from { transform: rotate(-25deg); }
-            to { transform: rotate(25deg); }
+        .btn-retro:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #1a1a1a;
         }
 
-        /* Confetti */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f0f;
-            animation: fall linear forwards;
-            z-index: 5;
-        }
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(720deg); }
-        }
-
-        /* Dynamic Text Stages */
-        .stage-text {
-            position: absolute;
+        /* Fixed Scanner Styles */
+        #reader {
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            top: 50%;
-            transform: translateY(-50%);
-            display: none; /* Hidden by default */
-            z-index: 50; /* Higher than confetti (5) */
+            min-height: 250px; /* Minimum height to prevent collapse */
+            border: 3px solid #1a1a1a;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+            overflow: hidden !important; /* Crucial: cuts off overflowing video */
+            background: #000;
+            position: relative;
         }
-
-        /* Text container for better readability */
-        .text-backdrop {
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid rgba(255, 0, 255, 0.3);
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
-            margin: 0 20px;
-            max-width: 90%;
+        
+        #reader video {
+            object-fit: cover;
+            width: 100% !important;
+            height: 100% !important;
         }
-
-        .neon-text-large {
-            font-size: 2.5rem;
-            line-height: 1.1;
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            text-shadow: 
-                0 0 5px #fff,
-                0 0 10px #fff,
-                0 0 20px #ff00de,
-                0 0 30px #ff00de,
-                0 0 40px #ff00de;
+        
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #d946ef;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
         }
-
-        .sub-neon {
-            font-family: 'Ruslan Display', cursive;
-            color: #0ff;
-            font-size: 1.5rem;
-            text-shadow: 2px 2px 0 #000;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Disco Ball Spin */
-        .disco-ball-img {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 15px;
-            animation: spinBall 4s linear infinite;
-        }
-        @keyframes spinBall { 100% { transform: rotate(360deg); } }
-
-        /* Pulse BG */
-        .pulse-bg {
-            animation: bgPulse 0.46s infinite alternate; /* Matches typical beat */
-        }
-        @keyframes bgPulse {
-            from { background: radial-gradient(circle at center, #4a044e 0%, #000 100%); }
-            to { background: radial-gradient(circle at center, #2e0228 0%, #000 100%); }
-        }
-
-        /* Scanner Fix */
-        #reader { width: 100%; min-height: 250px; overflow: hidden !important; background: #000; position: relative; border: 3px solid #1a1a1a;}
-        #reader video { object-fit: cover; width: 100% !important; height: 100% !important; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #d946ef; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
-        @keyframes spin { 0% { rotate(0deg); } 100% { rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
 
-    <!-- AUDIO ELEMENT (Hidden) -->
-    <!-- New Audio Source (More reliable, direct MP3) -->
-    <audio id="discoAudio" preload="auto">
-        <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- PROFESSIONAL ANIMATION OVERLAY -->
-    <div id="discoOverlay" class="fixed inset-0 z-[100] hidden overflow-hidden">
-        
-        <!-- Spotlights -->
-        <div class="spotlight"></div>
-        <div class="spotlight"></div>
-        <div class="spotlight"></div>
-        
-        <!-- Container for Confetti -->
-        <div id="confettiContainer" class="absolute inset-0 pointer-events-none"></div>
-
-        <!-- STAGE 1: Intro -->
-        <div id="stage1" class="stage-text">
-            <div class="text-backdrop animate__animated animate__zoomIn">
-                <h2 class="sub-neon">Готуй вбрання...</h2>
-            </div>
-        </div>
-
-        <!-- STAGE 2: Build Up -->
-        <div id="stage2" class="stage-text">
-            <div class="text-backdrop animate__animated animate__backInLeft flex flex-col items-center">
-                <h2 class="sub-neon">Це буде...</h2>
-                <div class="text-5xl sm:text-6xl font-black text-yellow-300 transform rotate-[-5deg] animate__animated animate__pulse animate__infinite mt-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">КРУТО!</div>
-            </div>
-        </div>
-
-        <!-- STAGE 3: Main Event -->
-        <div id="stage3" class="stage-text">
-            <div class="text-backdrop animate__animated animate__fadeInDown text-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2452/2452243.png" class="disco-ball-img filter drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]" alt="Disco Ball">
-                
-                <div class="sub-neon">ЛАСКАВО ПРОСИМО</div>
-                
-                <h1 class="neon-text-large animate__animated animate__zoomInDown mb-4">
-                    ВЕСІЛЬНА<br>ДИСКОТЕКА
-                </h1>
-                
-                <div class="inline-block bg-yellow-400 text-black font-black text-xl sm:text-2xl px-6 py-2 transform skew-x-[-10deg] shadow-[4px_4px_0_rgba(0,0,0,1)] animate__animated animate__rubberBand animate__delay-1s">
-                    30 ГРУДНЯ
-                </div>
-            </div>
-        </div>
-
+    <!-- GLOBAL ERROR MESSAGE -->
+    <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-3 text-center hidden z-50 shadow-lg font-bold border-b-4 border-black text-sm">
+        <!-- Error text will be injected here -->
     </div>
 
-    <!-- GLOBAL ERROR MESSAGE -->
-    <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-3 text-center hidden z-50 shadow-lg font-bold border-b-4 border-black text-sm"></div>
-
-    <!-- MAIN CARD -->
+    <!-- MAIN CONTAINER -->
     <div class="w-full max-w-md wedding-card p-4 sm:p-6 relative z-10">
         
-        <!-- HEADER -->
+        <!-- HEADER WITH IMAGE PLACEHOLDER -->
         <div class="text-center mb-4">
+            <!-- Зменшено відступи та встановлено горизонтальний формат -->
             <div class="mb-3 border-2 border-black p-1 bg-white shadow-sm mx-auto max-w-full">
-                <img src="https://i.ibb.co/mV3fXX2k/photo-2025-12-14-00-08-07.jpg" alt="Disco Collage" class="w-full h-auto max-h-[200px] object-cover object-center grayscale-0" id="headerImage">
+                <!-- Використано max-h для обмеження висоти на мобільних -->
+                <img src="https://i.ibb.co/mV3fXX2k/photo-2025-12-14-00-08-07.jpg" 
+                     alt="Disco Collage" 
+                     class="w-full h-auto max-h-[200px] object-cover object-center grayscale-0"
+                     id="headerImage">
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-bold text-black retro-font mb-1 tracking-wider uppercase leading-none">
@@ -241,18 +129,19 @@
             </div>
         </div>
 
-        <!-- REGISTRATION FORM -->
+        <!-- VIEW: REGISTRATION FORM (Default) -->
         <div id="view-register">
             <form id="registerForm" class="space-y-3">
+                <!-- Step 1: Personal Data -->
                 <div id="step-data" class="space-y-2">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Ім'я</label>
-                            <input type="text" id="regFirstName" required class="w-full p-2 text-sm input-retro" placeholder="Ім'я">
+                            <input type="text" id="regFirstName" required class="w-full p-2 text-sm input-retro" placeholder="Вася">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Прізвище</label>
-                            <input type="text" id="regLastName" required class="w-full p-2 text-sm input-retro" placeholder="Прізвище">
+                            <input type="text" id="regLastName" required class="w-full p-2 text-sm input-retro" placeholder="Пупкін">
                         </div>
                     </div>
                     
@@ -277,6 +166,7 @@
                         </div>
                     </div>
 
+                    <!-- ReCaptcha Container (Compact) -->
                     <div class="flex justify-center my-2 border-2 border-black p-1 bg-gray-50 transform scale-90 origin-center">
                         <div class="g-recaptcha" data-sitekey="6LeKzCosAAAAALIF_wFbmz3PKZPQZ2nRfAHUxUn4"></div>
                     </div>
@@ -290,7 +180,7 @@
             </form>
         </div>
 
-        <!-- TICKET VIEW -->
+        <!-- VIEW: TICKET SUCCESS -->
         <div id="view-ticket" class="hidden text-center space-y-4">
             <div class="border-b-4 border-dotted border-black pb-4">
                 <div class="bg-green-400 text-black px-4 py-1 border-2 border-black transform rotate-2 inline-block mb-3 font-bold shadow-[3px_3px_0px_rgba(0,0,0,1)] text-sm">
@@ -313,7 +203,7 @@
             </div>
         </div>
 
-        <!-- ADMIN LOGIN VIEW -->
+        <!-- VIEW: ADMIN LOGIN -->
         <div id="view-admin-login" class="hidden">
             <h2 class="text-xl retro-font text-center mb-4 text-black">Вхід для своїх</h2>
             <form id="adminLoginForm" class="space-y-3">
@@ -325,57 +215,83 @@
             </form>
         </div>
 
-        <!-- ADMIN DASHBOARD -->
+        <!-- VIEW: ADMIN DASHBOARD -->
         <div id="view-admin-dash" class="hidden">
             <div class="flex justify-between items-center mb-4 border-b-4 border-black pb-2">
                 <h2 class="retro-font text-lg text-black">Фейс-контроль</h2>
                 <button onclick="logoutAdmin()" class="text-[10px] text-red-600 hover:text-red-800 font-black uppercase tracking-wider border border-red-600 px-2 py-1 hover:bg-red-50"> Вихід <i class="fas fa-sign-out-alt ml-1"></i></button>
             </div>
+
+            <!-- Tabs -->
             <div class="flex space-x-0 mb-4 border-2 border-black">
                 <button onclick="switchAdminTab('scan')" id="tab-scan" class="flex-1 py-2 bg-yellow-300 text-black text-xs font-bold border-r-2 border-black hover:bg-yellow-400">СКАНЕР</button>
                 <button onclick="switchAdminTab('list')" id="tab-list" class="flex-1 py-2 bg-white text-gray-500 text-xs font-bold hover:bg-gray-100">СПИСОК</button>
             </div>
+
+            <!-- Tab Content: Scanner -->
             <div id="admin-scan-content">
+                <!-- Removed class h-64, relying on CSS min-height -->
                 <div id="reader"></div>
+                
                 <div id="scanResult" class="mt-4 p-3 text-center hidden font-bold text-sm border-2 border-black shadow-[3px_3px_0px_#000]"></div>
                 <div class="mt-4 text-center">
-                    <button id="startScanBtn" class="bg-green-500 text-black border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] text-sm"><i class="fas fa-camera mr-2"></i> Сканувати</button>
-                    <button id="stopScanBtn" class="bg-red-500 text-white border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] hidden text-sm">Зупинити</button>
+                    <button id="startScanBtn" class="bg-green-500 text-black border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] text-sm">
+                        <i class="fas fa-camera mr-2"></i> Сканувати
+                    </button>
+                    <button id="stopScanBtn" class="bg-red-500 text-white border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] hidden text-sm">
+                        Зупинити
+                    </button>
                 </div>
             </div>
+
+            <!-- Tab Content: List & Stats -->
             <div id="admin-list-content" class="hidden h-80 overflow-y-auto pr-1">
+                <!-- Stats -->
                 <div class="grid grid-cols-3 gap-2 mb-4 text-center">
                     <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                        <div class="text-[9px] text-gray-500 uppercase font-bold">9 Клас</div><div id="count9" class="text-lg text-pink-600 font-black">0</div>
+                        <div class="text-[9px] text-gray-500 uppercase font-bold">9 Клас</div>
+                        <div id="count9" class="text-lg text-pink-600 font-black">0</div>
                     </div>
                     <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                        <div class="text-[9px] text-gray-500 uppercase font-bold">10 Клас</div><div id="count10" class="text-lg text-purple-600 font-black">0</div>
+                        <div class="text-[9px] text-gray-500 uppercase font-bold">10 Клас</div>
+                        <div id="count10" class="text-lg text-purple-600 font-black">0</div>
                     </div>
                     <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                        <div class="text-[9px] text-gray-500 uppercase font-bold">11 Клас</div><div id="count11" class="text-lg text-blue-600 font-black">0</div>
+                        <div class="text-[9px] text-gray-500 uppercase font-bold">11 Клас</div>
+                        <div id="count11" class="text-lg text-blue-600 font-black">0</div>
                     </div>
                 </div>
+                
                 <div class="flex justify-between text-[10px] font-bold mb-2 px-1 border-b-2 border-gray-200 pb-2">
                     <span>Всього: <span id="totalReg" class="text-black">0</span></span>
                     <span>Прийшли: <span id="totalEntered" class="text-green-600">0</span></span>
                 </div>
-                <table class="w-full text-xs text-left"><tbody id="studentsTableBody" class="divide-y divide-black"></tbody></table>
+
+                <!-- Table -->
+                <table class="w-full text-xs text-left">
+                    <tbody id="studentsTableBody" class="divide-y divide-black">
+                        <!-- Rows generated by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </div>
 
     <!-- Hidden Admin Trigger -->
     <div class="fixed bottom-2 right-2">
-        <button onclick="showView('view-admin-login')" class="text-black hover:text-pink-600 transition p-2 bg-yellow-300 border-2 border-black shadow-[2px_2px_0px_#000]"><i class="fas fa-user-secret text-lg"></i></button>
+        <button onclick="showView('view-admin-login')" class="text-black hover:text-pink-600 transition p-2 bg-yellow-300 border-2 border-black shadow-[2px_2px_0px_#000]">
+            <i class="fas fa-user-secret text-lg"></i>
+        </button>
     </div>
 
-    <!-- LOGIC -->
+    <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // CONFIG (Replace with your own if needed, but this one works for demo)
+        // CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBk7pCfHC-_odVmIz43IdJYlCdkLu4C_BA",
             authDomain: "verification-2c9a4.firebaseapp.com",
@@ -386,116 +302,58 @@
             measurementId: "G-QK2KF6TZFR"
         };
 
+        // INIT FIREBASE
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        
+        // Ensure auth language is Ukrainian for SMS templates/Captcha
         auth.languageCode = 'uk';
 
+        // UI HELPERS
+        const showGlobalError = (msg) => {
+            const el = document.getElementById('globalError');
+            el.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${msg}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        };
+
+        // GLOBAL STATE
         let html5QrCode;
         let unsubscribeListeners = null;
+
+        // AUTHENTICATION STRATEGY
         signInAnonymously(auth).catch((err) => console.log("Anon auth failed:", err));
 
+        // =======================
+        // VIEW NAVIGATION
+        // =======================
         window.showView = (viewId) => {
-            ['view-register', 'view-ticket', 'view-admin-login', 'view-admin-dash'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['view-register', 'view-ticket', 'view-admin-login', 'view-admin-dash'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
             document.getElementById(viewId).classList.remove('hidden');
+
+            // Cleanup when leaving admin dash
             if (viewId !== 'view-admin-dash') {
                 if (html5QrCode && html5QrCode.isScanning) {
                     html5QrCode.stop().catch(err => console.error(err));
                     document.getElementById('stopScanBtn').classList.add('hidden');
                     document.getElementById('startScanBtn').classList.remove('hidden');
                 }
-                if (unsubscribeListeners) { unsubscribeListeners(); unsubscribeListeners = null; }
+                if (unsubscribeListeners) {
+                    unsubscribeListeners();
+                    unsubscribeListeners = null;
+                }
             }
         }
+        
+        // Init setup on load
         showView('view-register');
 
-        // --- ANIMATION & AUDIO ---
-        const audio = document.getElementById('discoAudio');
-        audio.volume = 0.5;
-
-        // Confetti Maker
-        function fireConfetti() {
-            const colors = ['#f0f', '#0ff', '#ff0', '#f00', '#fff'];
-            const container = document.getElementById('confettiContainer');
-            
-            // Create 30 particles every call
-            for(let i=0; i<30; i++) {
-                const conf = document.createElement('div');
-                conf.classList.add('confetti');
-                conf.style.left = Math.random() * 100 + 'vw';
-                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; // 2-4s fall
-                container.appendChild(conf);
-                
-                // Cleanup
-                setTimeout(() => conf.remove(), 4000);
-            }
-        }
-
-        async function runProfessionalDiscoSequence(callback) {
-            const overlay = document.getElementById('discoOverlay');
-            const s1 = document.getElementById('stage1');
-            const s2 = document.getElementById('stage2');
-            const s3 = document.getElementById('stage3');
-            
-            // Reset styles
-            [s1, s2, s3].forEach(el => el.style.display = 'none');
-            
-            // Force display block to enable flex/center styles immediately
-            s1.style.display = 'flex';
-            
-            overlay.classList.remove('hidden');
-            overlay.classList.add('pulse-bg');
-
-            // 1. START AUDIO
-            try {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log("Autoplay prevented:", e));
-            } catch(e) { console.log("Audio play failed", e); }
-
-            // 2. TIMELINE OF EVENTS (Total ~9 seconds)
-            
-            // 0s: Start
-            fireConfetti();
-            let confettiInterval = setInterval(fireConfetti, 400); // Continuous confetti
-
-            // 0s: Stage 1 "Готуй вбрання" (already shown via display:flex above)
-            
-            // 2.5s: Hide S1, Show S2 "Це буде..."
-            setTimeout(() => { 
-                s1.style.display = 'none'; 
-                s2.style.display = 'flex';
-            }, 2500);
-
-            // 4.5s: The Drop! Hide S2, Show S3 "WELCOME"
-            setTimeout(() => {
-                s2.style.display = 'none';
-                s3.style.display = 'flex';
-                // Intense confetti
-                clearInterval(confettiInterval);
-                confettiInterval = setInterval(fireConfetti, 100); 
-            }, 4500);
-
-            // 9.0s: Finish
-            setTimeout(() => {
-                clearInterval(confettiInterval);
-                // Fade out audio
-                let fade = setInterval(() => {
-                    if(audio.volume > 0.1) audio.volume -= 0.1;
-                    else { clearInterval(fade); audio.pause(); audio.volume = 0.5; }
-                }, 200);
-
-                overlay.classList.add('animate__animated', 'animate__fadeOut');
-                
-                setTimeout(() => {
-                    overlay.classList.add('hidden');
-                    overlay.classList.remove('animate__animated', 'animate__fadeOut', 'pulse-bg');
-                    if (callback) callback();
-                }, 1000);
-            }, 9000);
-        }
-
-        // --- REGISTRATION ---
+        // =======================
+        // STUDENT REGISTRATION
+        // =======================
         const registerForm = document.getElementById('registerForm');
         const submitBtn = document.getElementById('regSubmitBtn');
         const errorDiv = document.getElementById('regError');
@@ -504,12 +362,15 @@
             e.preventDefault();
             errorDiv.classList.add('hidden');
             
-            if (!grecaptcha.getResponse()) {
+            // 1. CAPTCHA CHECK
+            const captchaResponse = grecaptcha.getResponse();
+            if (!captchaResponse) {
                 errorDiv.innerText = "Підтвердіть, що ви не робот!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
+            // 2. FORM DATA
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
             const grade = document.getElementById('regGrade').value;
@@ -521,144 +382,270 @@
                 return;
             }
 
-            // ATTEMPT TO UNLOCK AUDIO ON USER INTERACTION
-            // Browsers allow audio.play() inside click handlers.
-            // We call play() here and pause() to unlock it, then reset time.
-            try {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(err => console.log("Audio unlock failed (will try again in sequence):", err));
-            } catch (err) {}
-
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Вантажимо...';
+            submitBtn.innerHTML = '<div class="loader"></div>';
 
-            // RUN ANIMATION BEFORE SAVING
-            await runProfessionalDiscoSequence(async () => {
-                try {
-                    if (!auth.currentUser) await signInAnonymously(auth);
+            try {
+                // 3. Save Data to Firestore
+                if (!auth.currentUser) await signInAnonymously(auth);
 
-                    const docRef = await addDoc(collection(db, "guests"), {
-                        firstName, lastName, grade, phone,
-                        uid: auth.currentUser ? auth.currentUser.uid : 'anon',
-                        status: 'registered',
-                        createdAt: serverTimestamp()
-                    });
+                const docRef = await addDoc(collection(db, "guests"), {
+                    firstName,
+                    lastName,
+                    grade,
+                    phone,
+                    uid: auth.currentUser ? auth.currentUser.uid : 'anon',
+                    status: 'registered',
+                    createdAt: serverTimestamp()
+                });
 
-                    const guestId = docRef.id;
-                    document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById('qrcode'), {
-                        text: guestId, width: 140, height: 140,
-                        colorDark : "#1a1a1a", colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
+                // 4. Generate QR
+                const guestId = docRef.id;
+                document.getElementById('qrcode').innerHTML = "";
+                new QRCode(document.getElementById('qrcode'), {
+                    text: guestId,
+                    width: 140, // Slightly smaller QR
+                    height: 140,
+                    colorDark : "#1a1a1a",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
 
-                    document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
-                    document.getElementById('ticketGrade').textContent = `${grade} Клас`;
-                    document.getElementById('ticketId').textContent = guestId;
+                // 5. Show Ticket
+                document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
+                document.getElementById('ticketGrade').textContent = `${grade} Клас`;
+                document.getElementById('ticketId').textContent = guestId;
 
-                    showView('view-ticket');
-                    localStorage.setItem('saved_ticket', guestId);
-                    registerForm.reset();
-                    grecaptcha.reset();
-                    submitBtn.textContent = "ОТРИМАТИ КВИТОК!";
-                    submitBtn.disabled = false;
+                showView('view-ticket');
+                localStorage.setItem('saved_ticket', guestId);
+                
+                registerForm.reset();
+                grecaptcha.reset();
 
-                } catch (error) {
-                    console.error(error);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "ОТРИМАТИ КВИТОК!";
-                    errorDiv.innerHTML = "Помилка реєстрації. Спробуйте ще раз.";
-                    errorDiv.classList.remove('hidden');
-                }
-            });
+            } catch (error) {
+                console.error("Registration Error:", error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Хочу на Дискотеку!";
+                
+                let msg = "Помилка реєстрації.";
+                if (error.code === 'permission-denied') msg = "Помилка доступу до бази.";
+                
+                errorDiv.innerHTML = msg;
+                errorDiv.classList.remove('hidden');
+            }
         });
 
-        // --- ADMIN & SCANNER LOGIC (Kept same as before) ---
+        // =======================
+        // ADMIN LOGIC
+        // =======================
         document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'disco2024') {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+            const err = document.getElementById('loginError');
+
+            // HARDCODED ADMIN CREDENTIALS
+            if (u === 'admin' && p === 'disco2024') {
+                document.getElementById('adminUser').value = '';
+                document.getElementById('adminPass').value = '';
+                err.classList.add('hidden');
                 initAdminDashboard();
                 showView('view-admin-dash');
             } else {
-                document.getElementById('loginError').classList.remove('hidden');
+                err.classList.remove('hidden');
             }
         });
-        window.logoutAdmin = () => showView('view-register');
-        window.switchAdminTab = (tab) => {
-            const s = document.getElementById('admin-scan-content');
-            const l = document.getElementById('admin-list-content');
-            const bs = document.getElementById('tab-scan');
-            const bl = document.getElementById('tab-list');
-            if(tab === 'scan') {
-                s.classList.remove('hidden'); l.classList.add('hidden');
-                bs.classList.replace('bg-white','bg-yellow-300'); bl.classList.replace('bg-yellow-300','bg-white');
-            } else {
-                l.classList.remove('hidden'); s.classList.add('hidden');
-                bl.classList.replace('bg-white','bg-yellow-300'); bs.classList.replace('bg-yellow-300','bg-white');
-            }
-        };
 
+        window.logoutAdmin = () => {
+            showView('view-register');
+        }
+
+        window.switchAdminTab = (tab) => {
+            const btnScan = document.getElementById('tab-scan');
+            const btnList = document.getElementById('tab-list');
+            const viewScan = document.getElementById('admin-scan-content');
+            const viewList = document.getElementById('admin-list-content');
+
+            if (tab === 'scan') {
+                btnScan.classList.replace('bg-white', 'bg-yellow-300');
+                btnScan.classList.replace('text-gray-500', 'text-black');
+                
+                btnList.classList.replace('bg-yellow-300', 'bg-white');
+                btnList.classList.replace('text-black', 'text-gray-500');
+                
+                viewScan.classList.remove('hidden');
+                viewList.classList.add('hidden');
+            } else {
+                btnList.classList.replace('bg-white', 'bg-yellow-300');
+                btnList.classList.replace('text-gray-500', 'text-black');
+                
+                btnScan.classList.replace('bg-yellow-300', 'bg-white');
+                btnScan.classList.replace('text-black', 'text-gray-500');
+
+                viewList.classList.remove('hidden');
+                viewScan.classList.add('hidden');
+            }
+        }
+
+        // =======================
+        // SCANNER LOGIC
+        // =======================
         let isProcessingScan = false;
+
         document.getElementById('startScanBtn').addEventListener('click', () => {
-            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 } }, onScanSuccess)
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+            
+            const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+            
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
             .then(() => {
                 document.getElementById('startScanBtn').classList.add('hidden');
                 document.getElementById('stopScanBtn').classList.remove('hidden');
                 document.getElementById('scanResult').classList.add('hidden');
-            });
-        });
-        document.getElementById('stopScanBtn').addEventListener('click', () => {
-            if(html5QrCode) html5QrCode.stop().then(() => {
-                document.getElementById('stopScanBtn').classList.add('hidden');
-                document.getElementById('startScanBtn').classList.remove('hidden');
+            })
+            .catch(err => {
+                alert("Помилка камери: " + err);
             });
         });
 
-        const onScanSuccess = async (decodedText) => {
+        document.getElementById('stopScanBtn').addEventListener('click', () => {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('stopScanBtn').classList.add('hidden');
+                    document.getElementById('startScanBtn').classList.remove('hidden');
+                }).catch(err => console.log(err));
+            }
+        });
+
+        const onScanSuccess = async (decodedText, decodedResult) => {
             if (isProcessingScan) return;
             isProcessingScan = true;
-            const r = document.getElementById('scanResult');
-            r.classList.remove('hidden','bg-green-200','bg-yellow-200','bg-red-200');
-            r.innerHTML = '<div class="loader"></div>';
-            
+
+            const resDiv = document.getElementById('scanResult');
+            resDiv.classList.remove('hidden', 'bg-green-300', 'bg-red-300', 'bg-yellow-300', 'text-white');
+            resDiv.innerHTML = '<div class="loader"></div>';
+            resDiv.className = "mt-4 p-3 text-center font-bold text-sm bg-white border-2 border-black shadow-[3px_3px_0px_#000]";
+
             try {
-                const ref = doc(db, "guests", decodedText);
-                const snap = await getDoc(ref);
-                if (snap.exists()) {
-                    const d = snap.data();
-                    if (d.status === 'registered') {
-                        await updateDoc(ref, { status: 'entered', enteredAt: serverTimestamp() });
-                        r.className = "mt-4 p-3 text-center bg-green-200 border-2 border-black shadow-[3px_3px_0px_#000]";
-                        r.innerHTML = `<div class="text-green-800 text-2xl"><i class="fas fa-thumbs-up"></i></div><div class="font-black uppercase">${d.firstName}</div><div class="text-[10px] font-bold">ВХІД ДОЗВОЛЕНО</div>`;
-                    } else {
-                        r.className = "mt-4 p-3 text-center bg-yellow-200 border-2 border-black shadow-[3px_3px_0px_#000]";
-                        r.innerHTML = `<div class="text-yellow-800 text-2xl"><i class="fas fa-hand-paper"></i></div><div class="font-black uppercase">${d.firstName}</div><div class="text-[10px] font-bold">ВЖЕ ЗАЙШОВ!</div>`;
+                const docRef = doc(db, "guests", decodedText);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    if (data.status === 'registered') {
+                        // SUCCESS
+                        await updateDoc(docRef, {
+                            status: 'entered',
+                            enteredAt: serverTimestamp()
+                        });
+                        resDiv.className = "mt-4 p-3 text-center bg-green-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                        resDiv.innerHTML = `
+                            <div class="text-green-800 text-2xl mb-1"><i class="fas fa-thumbs-up"></i></div>
+                            <div class="font-black uppercase text-black text-lg">${data.firstName} ${data.lastName}</div>
+                            <div class="text-[10px] text-green-800 font-bold uppercase tracking-widest mt-1">ВХІД ДОЗВОЛЕНО (${data.grade} кл)</div>
+                        `;
+                        playBeep(true);
+                    } else if (data.status === 'entered') {
+                        // ALREADY USED
+                        resDiv.className = "mt-4 p-3 text-center bg-yellow-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                        resDiv.innerHTML = `
+                            <div class="text-yellow-800 text-2xl mb-1"><i class="fas fa-hand-paper"></i></div>
+                            <div class="font-black uppercase text-black text-lg">${data.firstName} ${data.lastName}</div>
+                            <div class="text-[10px] text-yellow-800 font-bold uppercase tracking-widest mt-1">ВЖЕ ЗАЙШОВ!</div>
+                        `;
+                        playBeep(false);
                     }
                 } else {
-                    r.className = "mt-4 p-3 text-center bg-red-200 border-2 border-black shadow-[3px_3px_0px_#000]";
-                    r.innerHTML = `<div class="text-red-800 text-2xl"><i class="fas fa-ban"></i></div><div class="font-black text-xs">ФАЛЬШИВКА!</div>`;
+                    // NOT FOUND
+                    resDiv.className = "mt-4 p-3 text-center bg-red-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                    resDiv.innerHTML = `
+                        <div class="text-red-800 text-2xl mb-1"><i class="fas fa-ban"></i></div>
+                        <div class="font-black text-red-800 uppercase tracking-widest text-xs">ФАЛЬШИВКА!</div>
+                    `;
+                    playBeep(false);
                 }
-            } catch(e) { r.innerText = "Помилка"; }
-            setTimeout(() => isProcessingScan = false, 3000);
+            } catch (err) {
+                console.error(err);
+                resDiv.innerText = "Помилка";
+            }
+
+            setTimeout(() => {
+                isProcessingScan = false;
+            }, 3000);
         };
 
+        function playBeep(success) {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            osc.type = success ? 'square' : 'sawtooth'; // Retro sounds
+            osc.frequency.value = success ? 880 : 150;
+            osc.connect(context.destination);
+            osc.start();
+            osc.stop(context.currentTime + 0.15);
+            if(success) {
+                setTimeout(() => {
+                    const osc2 = context.createOscillator();
+                    osc2.type = 'square';
+                    osc2.frequency.value = 1760;
+                    osc2.connect(context.destination);
+                    osc2.start();
+                    osc2.stop(context.currentTime + 0.1);
+                }, 100);
+            }
+        }
+
+        // =======================
+        // DASHBOARD DATA LISTENER
+        // =======================
         function initAdminDashboard() {
             if (unsubscribeListeners) return;
-            unsubscribeListeners = onSnapshot(query(collection(db, "guests"), orderBy("createdAt", "desc")), (snap) => {
-                let c9=0, c10=0, c11=0, ent=0, html='';
-                snap.docs.forEach(doc => {
+
+            const q = query(collection(db, "guests"), orderBy("createdAt", "desc"));
+            
+            unsubscribeListeners = onSnapshot(q, (snapshot) => {
+                const tableBody = document.getElementById('studentsTableBody');
+                let c9 = 0, c10 = 0, c11 = 0;
+                let entered = 0;
+                let html = '';
+
+                snapshot.docs.forEach(doc => {
                     const d = doc.data();
-                    if(d.grade=='9')c9++; if(d.grade=='10')c10++; if(d.grade=='11')c11++; if(d.status=='entered')ent++;
-                    html += `<tr class="hover:bg-yellow-50 border-b border-black"><td class="px-1 py-2 font-bold text-xs uppercase">${d.firstName} ${d.lastName}</td><td class="px-1 py-2 text-xs border-l border-black text-center">${d.grade}</td><td class="px-1 py-2 text-right border-l border-black">${d.status=='entered'?'<span class="bg-green-200 px-1 border border-black text-[9px]">Є</span>':'<span class="bg-gray-100 px-1 border border-gray-300 text-[9px]">Нема</span>'}</td></tr>`;
+                    
+                    if (d.grade == '9') c9++;
+                    if (d.grade == '10') c10++;
+                    if (d.grade == '11') c11++;
+                    if (d.status === 'entered') entered++;
+
+                    const statusBadge = d.status === 'entered' 
+                        ? '<span class="px-2 py-1 bg-green-200 text-black border border-black rounded-none text-[9px] font-bold uppercase">Є</span>' 
+                        : '<span class="px-2 py-1 bg-gray-100 text-gray-500 border border-gray-300 rounded-none text-[9px] font-bold uppercase">Нема</span>';
+
+                    html += `
+                        <tr class="hover:bg-yellow-50 transition border-b border-black">
+                            <td class="px-1 py-2">
+                                <div class="font-bold text-black uppercase text-xs">${d.firstName} ${d.lastName}</div>
+                                <div class="text-[9px] text-gray-500 font-mono">${d.phone}</div>
+                            </td>
+                            <td class="px-1 py-2 text-xs font-bold text-black border-l border-black text-center">${d.grade}</td>
+                            <td class="px-1 py-2 text-right border-l border-black">${statusBadge}</td>
+                        </tr>
+                    `;
                 });
-                document.getElementById('studentsTableBody').innerHTML = html;
-                document.getElementById('count9').innerText = c9; document.getElementById('count10').innerText = c10; document.getElementById('count11').innerText = c11;
-                document.getElementById('totalReg').innerText = snap.size; document.getElementById('totalEntered').innerText = ent;
+
+                tableBody.innerHTML = html;
+                document.getElementById('count9').innerText = c9;
+                document.getElementById('count10').innerText = c10;
+                document.getElementById('count11').innerText = c11;
+                document.getElementById('totalReg').innerText = snapshot.size;
+                document.getElementById('totalEntered').innerText = entered;
+            }, (error) => {
+                 console.error("Dashboard Error:", error);
             });
         }
+
     </script>
 </body>
 </html>
