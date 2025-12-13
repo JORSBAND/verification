@@ -66,30 +66,50 @@
         <!-- VIEW: REGISTRATION FORM (Default) -->
         <div id="view-register">
             <form id="registerForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300">Ім'я</label>
-                    <input type="text" id="regFirstName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Іван">
+                <!-- Step 1: Personal Data -->
+                <div id="step-data" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300">Ім'я</label>
+                        <input type="text" id="regFirstName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Іван">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300">Прізвище</label>
+                        <input type="text" id="regLastName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Петренко">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300">Клас</label>
+                        <select id="regGrade" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white">
+                            <option value="" disabled selected>Оберіть клас</option>
+                            <option value="9">9 Клас</option>
+                            <option value="10">10 Клас</option>
+                            <option value="11">11 Клас</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300">Телефон (для SMS)</label>
+                        <input type="tel" id="regPhone" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="+380991234567" value="+380">
+                        <p class="text-xs text-gray-500 mt-1">Введіть повний номер з кодом країни (+380...)</p>
+                    </div>
+                    
+                    <!-- ReCaptcha Container -->
+                    <div id="recaptcha-container" class="flex justify-center my-4 min-h-[78px]"></div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300">Прізвище</label>
-                    <input type="text" id="regLastName" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="Петренко">
+
+                <!-- Step 2: SMS Code (Hidden initially) -->
+                <div id="step-verify" class="hidden space-y-4 animate-fade-in">
+                     <div class="bg-blue-500/20 text-blue-300 p-3 rounded text-sm border border-blue-500/30">
+                        <i class="fas fa-sms mr-2"></i> Код відправлено на ваш номер!
+                     </div>
+                     <div>
+                        <label class="block text-sm font-medium text-gray-300">Код з SMS</label>
+                        <input type="number" id="smsCode" class="w-full mt-1 p-3 text-center text-xl tracking-widest rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="123456">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300">Клас</label>
-                    <select id="regGrade" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white">
-                        <option value="" disabled selected>Оберіть клас</option>
-                        <option value="9">9 Клас</option>
-                        <option value="10">10 Клас</option>
-                        <option value="11">11 Клас</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300">Телефон</label>
-                    <input type="tel" id="regPhone" required class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-600 focus:outline-none focus:border-purple-500 text-white" placeholder="099 123 45 67">
-                </div>
+
                 <div id="regError" class="text-red-400 text-sm text-center hidden p-2 bg-red-900/50 rounded border border-red-500/50"></div>
-                <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold hover:opacity-90 transition transform active:scale-95">
-                    Отримати квиток
+                
+                <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold hover:opacity-90 transition transform active:scale-95">
+                    Надіслати код підтвердження
                 </button>
             </form>
         </div>
@@ -202,7 +222,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // CONFIGURATION
         const firebaseConfig = {
@@ -219,6 +239,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        
+        // Ensure auth language is Ukrainian for SMS templates/Captcha
+        auth.languageCode = 'uk';
 
         // UI HELPERS
         const showGlobalError = (msg) => {
@@ -230,21 +253,45 @@
         // GLOBAL STATE
         let html5QrCode;
         let unsubscribeListeners = null;
+        let confirmationResult = null; // Store phone auth result
+        let recaptchaVerifier = null;
 
-        // AUTHENTICATION (Anonymous for DB access)
-        signInAnonymously(auth)
-            .then(() => {
-                console.log("Connected to database (Anonymous Auth Success)");
-                document.getElementById('globalError').classList.add('hidden');
-            })
-            .catch((error) => {
-                console.error("Auth Error", error);
-                if (error.code === 'auth/configuration-not-found' || error.code === 'auth/admin-restricted-operation') {
-                    showGlobalError("<b>ПОМИЛКА НАЛАШТУВАННЯ:</b> Увімкніть 'Anonymous' вхід в Firebase Authentication!");
-                } else {
-                    showGlobalError(`Помилка підключення: ${error.message}`);
+        // AUTHENTICATION STRATEGY
+        // Start anonymous auth for initial load/admin check, but handle switch to phone auth gracefully
+        signInAnonymously(auth).catch((err) => console.log("Anon auth skipped/failed (normal for phone flow):", err));
+
+        // RESET RECAPTCHA FUNCTION
+        function resetRecaptcha() {
+            if (recaptchaVerifier) {
+                try {
+                    recaptchaVerifier.clear();
+                } catch (e) {
+                    console.log("Error clearing recaptcha", e);
                 }
-            });
+                recaptchaVerifier = null;
+            }
+            // Clear DOM container manually to be safe
+            document.getElementById('recaptcha-container').innerHTML = '';
+        }
+
+        // SETUP RECAPTCHA
+        function setupRecaptcha() {
+            if (!recaptchaVerifier) {
+                recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'normal',
+                    'callback': (response) => {
+                        // reCAPTCHA solved, allow signInWithPhoneNumber.
+                        console.log("Captcha solved");
+                    },
+                    'expired-callback': () => {
+                        // Response expired. Ask user to solve reCAPTCHA again.
+                        console.log("Captcha expired");
+                        resetRecaptcha();
+                    }
+                });
+            }
+            return recaptchaVerifier;
+        }
 
         // =======================
         // VIEW NAVIGATION
@@ -267,76 +314,134 @@
                     unsubscribeListeners = null;
                 }
             }
-        }
 
-        // =======================
-        // STUDENT REGISTRATION
-        // =======================
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            const errorDiv = document.getElementById('regError');
-            
-            // Check auth first
-            if (!auth.currentUser) {
-                errorDiv.innerHTML = "Система не підключена до бази.<br>Перевірте консоль Firebase (Authentication).";
-                errorDiv.classList.remove('hidden');
-                return;
+            // Cleanup recaptcha if leaving register view (optional but good for stability)
+            if (viewId !== 'view-register') {
+                 resetRecaptcha();
+            } else {
+                // Pre-init captcha after a short delay to ensure DOM is ready
+                setTimeout(setupRecaptcha, 500);
             }
+        }
+        
+        // Init setup on load
+        showView('view-register');
 
-            // Lock UI
-            btn.disabled = true;
-            btn.innerHTML = '<div class="loader"></div>';
+        // =======================
+        // STUDENT REGISTRATION (2-STEP)
+        // =======================
+        const registerForm = document.getElementById('registerForm');
+        const submitBtn = document.getElementById('regSubmitBtn');
+        const errorDiv = document.getElementById('regError');
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             errorDiv.classList.add('hidden');
+            
+            // Check if we are in Step 1 (Send Code) or Step 2 (Verify Code)
+            const isStep2 = !document.getElementById('step-verify').classList.contains('hidden');
 
-            const firstName = document.getElementById('regFirstName').value.trim();
-            const lastName = document.getElementById('regLastName').value.trim();
-            const grade = document.getElementById('regGrade').value;
-            const phone = document.getElementById('regPhone').value.trim();
-
-            try {
-                // Add to Firestore
-                const docRef = await addDoc(collection(db, "guests"), {
-                    firstName,
-                    lastName,
-                    grade,
-                    phone,
-                    status: 'registered', // registered | entered
-                    createdAt: serverTimestamp()
-                });
-
-                // Generate QR
-                const guestId = docRef.id;
-                document.getElementById('qrcode').innerHTML = "";
-                new QRCode(document.getElementById('qrcode'), {
-                    text: guestId,
-                    width: 180,
-                    height: 180,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-
-                // Show Ticket Info
-                document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
-                document.getElementById('ticketGrade').textContent = `${grade} Клас`;
-                document.getElementById('ticketId').textContent = guestId;
-
-                showView('view-ticket');
-                localStorage.setItem('saved_ticket', guestId); // Optional: save locally
-
-            } catch (error) {
-                console.error("Error adding document: ", error);
+            if (!isStep2) {
+                // --- STEP 1: SEND SMS ---
+                const phone = document.getElementById('regPhone').value.trim();
                 
-                let errorMsg = "Помилка реєстрації. Спробуйте ще раз.";
-                if (error.code === 'permission-denied' || error.message.includes('Missing or insufficient permissions')) {
-                    errorMsg = "<b>ПОМИЛКА ПРАВ ДОСТУПУ:</b><br>Зайдіть в Firebase Console -> Firestore -> Rules і дозвольте запис (allow write: if true).";
+                if (phone.length < 10) {
+                    errorDiv.innerText = "Будь ласка, введіть коректний номер телефону (+380...)";
+                    errorDiv.classList.remove('hidden');
+                    return;
                 }
-                
-                errorDiv.innerHTML = errorMsg;
-                errorDiv.classList.remove('hidden');
-                btn.disabled = false;
-                btn.textContent = "Отримати квиток";
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Надсилання...';
+
+                try {
+                    // Ensure verifier exists
+                    const appVerifier = setupRecaptcha();
+                    
+                    confirmationResult = await signInWithPhoneNumber(auth, phone, appVerifier);
+                    
+                    // UI Transition to Step 2
+                    document.getElementById('step-data').classList.add('hidden'); // Hide data inputs
+                    document.getElementById('step-verify').classList.remove('hidden'); // Show code input
+                    submitBtn.textContent = "Підтвердити та отримати квиток";
+                    submitBtn.disabled = false;
+                    
+                } catch (error) {
+                    console.error("SMS Error:", error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Надіслати код підтвердження";
+                    
+                    let msg = "Помилка надсилання SMS.";
+                    if (error.code === 'auth/invalid-phone-number') msg = "Невірний формат номеру.";
+                    if (error.code === 'auth/too-many-requests') msg = "Забагато спроб. Спробуйте пізніше.";
+                    if (error.message.includes('billing') || error.code === 'auth/quota-exceeded') msg = "Ліміт SMS вичерпано. Зверніться до адміністратора.";
+                    if (error.code === 'auth/captcha-check-failed') msg = "Помилка капчі. Спробуйте знову.";
+                    if (error.code === 'auth/internal-error') msg = "Внутрішня помилка. Оновіть сторінку і спробуйте знову.";
+                    
+                    errorDiv.innerHTML = msg;
+                    errorDiv.classList.remove('hidden');
+                    
+                    // Critical: Reset Recaptcha on error so user can try again
+                    resetRecaptcha();
+                    setTimeout(setupRecaptcha, 100); // Re-init fresh
+                }
+
+            } else {
+                // --- STEP 2: VERIFY CODE & REGISTER ---
+                const code = document.getElementById('smsCode').value.trim();
+                if (!code) return;
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px"></div> Перевірка...';
+
+                try {
+                    // 1. Verify SMS Code
+                    const result = await confirmationResult.confirm(code);
+                    const user = result.user; // User is now logged in with phone
+
+                    // 2. Save Data to Firestore
+                    const firstName = document.getElementById('regFirstName').value.trim();
+                    const lastName = document.getElementById('regLastName').value.trim();
+                    const grade = document.getElementById('regGrade').value;
+                    const phone = document.getElementById('regPhone').value.trim();
+
+                    const docRef = await addDoc(collection(db, "guests"), {
+                        firstName,
+                        lastName,
+                        grade,
+                        phone,
+                        uid: user.uid, // Store Firebase Auth UID
+                        status: 'registered',
+                        createdAt: serverTimestamp()
+                    });
+
+                    // 3. Generate QR
+                    const guestId = docRef.id;
+                    document.getElementById('qrcode').innerHTML = "";
+                    new QRCode(document.getElementById('qrcode'), {
+                        text: guestId,
+                        width: 180,
+                        height: 180,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    // 4. Show Ticket
+                    document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
+                    document.getElementById('ticketGrade').textContent = `${grade} Клас`;
+                    document.getElementById('ticketId').textContent = guestId;
+
+                    showView('view-ticket');
+                    localStorage.setItem('saved_ticket', guestId);
+
+                } catch (error) {
+                    console.error("Verify Error:", error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Підтвердити та отримати квиток";
+                    errorDiv.innerText = "Невірний код або помилка запису. Спробуйте ще раз.";
+                    errorDiv.classList.remove('hidden');
+                }
             }
         });
 
