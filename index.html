@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="color-scheme" content="light dark">
-    <title>Дискотека 80-х</title>
+    <title>Карнавальна дискотека</title>
     <!-- QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- QR Code Scanner -->
@@ -98,6 +98,14 @@
             object-fit: cover;
             border-radius: 14px;
             display: block;
+        }
+        .hero-icon {
+            width: 84px; height: 84px; margin: 4px auto 0;
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; color: #fff;
+            background: linear-gradient(135deg, #ff375f 0%, #bf5af2 50%, #0a84ff 100%);
+            box-shadow: 0 8px 24px rgba(191, 90, 242, 0.35);
         }
         .eyebrow {
             margin: 18px 0 4px;
@@ -350,8 +358,8 @@
 
         <!-- VIEW: REGISTRATION FORM (Default) -->
         <div id="view-register">
-            <img src="https://i.ibb.co/mV3fXX2k/photo-2025-12-14-00-08-07.jpg" alt="Disco Collage" class="hero-img" id="headerImage">
-            <p class="eyebrow">Шкільна вечірка · 80-ті</p>
+            <div class="hero-icon" aria-hidden="true"><i class="fas fa-masks-theater"></i></div>
+            <p class="eyebrow">Шкільна вечірка · Карнавал</p>
             <h1 class="title">Дискотека</h1>
             <p class="subtitle">Зареєструйся, щоб отримати квиток.</p>
 
