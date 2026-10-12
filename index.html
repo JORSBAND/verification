@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Весільна Дискотека 80-х</title>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="color-scheme" content="light dark">
+    <title>Дискотека 80-х</title>
     <!-- QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- QR Code Scanner -->
@@ -14,276 +13,477 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Inter as fallback for SF Pro on non-Apple devices -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ruslan+Display&family=Montserrat:wght@400;700&display=swap');
+        :root {
+            --bg: #f5f5f7;
+            --card: #ffffff;
+            --text: #1d1d1f;
+            --text-2: #6e6e73;
+            --text-3: #86868b;
+            --field: #ffffff;
+            --field-border: #d2d2d7;
+            --separator: #e5e5ea;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --focus-ring: rgba(0, 113, 227, 0.25);
+            --segment-bg: #e8e8ed;
+            --segment-active: #ffffff;
+            --green: #248a3d;
+            --green-bg: #e3f6e8;
+            --orange: #b25000;
+            --orange-bg: #fff2df;
+            --red: #d70015;
+            --red-bg: #ffe5e7;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000;
+                --card: #1c1c1e;
+                --text: #f5f5f7;
+                --text-2: #a1a1a6;
+                --text-3: #8e8e93;
+                --field: #2c2c2e;
+                --field-border: #3a3a3c;
+                --separator: #38383a;
+                --accent: #0a84ff;
+                --accent-hover: #409cff;
+                --focus-ring: rgba(10, 132, 255, 0.35);
+                --segment-bg: #2c2c2e;
+                --segment-active: #636366;
+                --green: #30d158;
+                --green-bg: rgba(48, 209, 88, 0.15);
+                --orange: #ff9f0a;
+                --orange-bg: rgba(255, 159, 10, 0.15);
+                --red: #ff453a;
+                --red-bg: rgba(255, 69, 58, 0.15);
+                --shadow: none;
+            }
+        }
 
-        /* Background matched to the peach color of your collage */
+        * { box-sizing: border-box; }
+
         body {
-            background-color: #fcece4; 
-            color: #1a1a1a;
-            font-family: 'Montserrat', sans-serif;
-            background-image: radial-gradient(#eacab5 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        
-        h1, h2, .retro-font {
-            font-family: 'Ruslan Display', cursive; /* Retro style font */
-        }
-
-        .wedding-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid #1a1a1a;
-            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8); /* Slightly smaller shadow for mobile */
-            border-radius: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
         }
 
-        .input-retro {
-            background-color: #fff;
-            border: 2px solid #1a1a1a;
-            color: #1a1a1a;
-            transition: all 0.2s ease;
-            font-weight: bold;
+        .hidden { display: none !important; }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            padding: 24px;
         }
-        .input-retro:focus {
-            box-shadow: 4px 4px 0px #d4af37;
+
+        /* HEADER */
+        .hero-img {
+            width: 100%;
+            max-height: 190px;
+            object-fit: cover;
+            border-radius: 14px;
+            display: block;
+        }
+        .eyebrow {
+            margin: 18px 0 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            text-align: center;
+        }
+        .title {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.15;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            text-align: center;
+        }
+        .subtitle {
+            margin: 6px 0 22px;
+            font-size: 15px;
+            color: var(--text-2);
+            text-align: center;
+        }
+
+        /* FORM */
+        .field { margin-bottom: 12px; }
+        .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+        .label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-2);
+            margin: 0 0 6px 4px;
+        }
+        .input {
+            min-width: 0;
+            width: 100%;
+            height: 46px;
+            padding: 0 14px;
+            font: inherit;
+            font-size: 16px;
+            color: var(--text);
+            background: var(--field);
+            border: 1px solid var(--field-border);
+            border-radius: 12px;
             outline: none;
-            border-color: #1a1a1a;
+            transition: border-color .15s, box-shadow .15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .input::placeholder { color: var(--text-3); }
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--focus-ring);
+        }
+        .select-wrap { position: relative; }
+        .select-wrap .input { padding-right: 34px; cursor: pointer; }
+        .select-wrap i {
+            position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px; color: var(--text-3);
+            pointer-events: none;
         }
 
-        .btn-retro {
-            background-color: #d946ef; /* Bright pink */
-            border: 2px solid #1a1a1a;
-            color: white;
-            text-transform: uppercase;
-            box-shadow: 4px 4px 0px #1a1a1a;
-            transition: all 0.1s;
+        .captcha { display: flex; justify-content: center; margin: 16px 0 4px; }
+
+        .btn {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 980px;
+            font: inherit;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s, transform .1s, opacity .15s;
         }
-        .btn-retro:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px #1a1a1a;
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: .6; cursor: default; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-link {
+            background: none; border: none; font: inherit;
+            font-size: 15px; color: var(--accent);
+            cursor: pointer; padding: 10px; width: 100%;
         }
-        .btn-retro:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0px 0px 0px #1a1a1a;
+        .btn-link:hover { text-decoration: underline; }
+        .btn-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            height: 44px; padding: 0 22px;
+            border: none; border-radius: 980px;
+            font: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-pill.primary { background: var(--accent); color: #fff; }
+        .btn-pill.danger { background: var(--red-bg); color: var(--red); }
+
+        .alert {
+            margin: 10px 0 0;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+            background: var(--red-bg);
+            color: var(--red);
         }
 
-        /* Fixed Scanner Styles */
+        /* TICKET */
+        .badge-ok {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 980px;
+            background: var(--green-bg); color: var(--green);
+            font-size: 14px; font-weight: 600;
+        }
+        .ticket-name { margin: 14px 0 2px; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+        .ticket-grade { margin: 0; font-size: 15px; color: var(--text-2); }
+        .qr-box {
+            margin: 22px auto 10px;
+            width: fit-content;
+            padding: 14px;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid var(--separator);
+        }
+        .ticket-id { font-size: 12px; color: var(--text-3); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+        .note {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 12px;
+            background: var(--orange-bg);
+            color: var(--orange);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ADMIN */
+        .admin-head {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px;
+        }
+        .admin-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+        .segmented {
+            display: flex; padding: 2px; margin-bottom: 18px;
+            background: var(--segment-bg); border-radius: 10px;
+        }
+        .segmented button {
+            flex: 1; height: 32px; border: none; border-radius: 8px;
+            background: transparent; color: var(--text);
+            font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+            transition: background .15s, box-shadow .15s;
+        }
+        .segmented button.active {
+            background: var(--segment-active);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 1px rgba(0,0,0,.04);
+        }
+
         #reader {
             width: 100%;
-            min-height: 250px; /* Minimum height to prevent collapse */
-            border: 3px solid #1a1a1a;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
-            overflow: hidden !important; /* Crucial: cuts off overflowing video */
+            min-height: 250px;
+            border-radius: 16px;
+            overflow: hidden !important;
             background: #000;
             position: relative;
         }
-        
-        #reader video {
-            object-fit: cover;
-            width: 100% !important;
-            height: 100% !important;
+        #reader video { object-fit: cover; width: 100% !important; height: 100% !important; }
+
+        .scan-result {
+            margin-top: 14px; padding: 16px; border-radius: 14px; text-align: center;
         }
-        
-        /* Loader */
+        .scan-result .icon { font-size: 26px; margin-bottom: 6px; }
+        .scan-result .name { font-size: 18px; font-weight: 700; }
+        .scan-result .sub { font-size: 13px; font-weight: 500; margin-top: 2px; }
+        .scan-ok { background: var(--green-bg); color: var(--green); }
+        .scan-warn { background: var(--orange-bg); color: var(--orange); }
+        .scan-bad { background: var(--red-bg); color: var(--red); }
+        .scan-ok .name, .scan-warn .name { color: var(--text); }
+
+        #admin-list-content { max-height: 420px; overflow-y: auto; }
+        .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 14px; }
+        .stat {
+            background: var(--bg); border-radius: 12px; padding: 8px 4px; text-align: center;
+        }
+        .stat .k { font-size: 11px; color: var(--text-2); font-weight: 500; }
+        .stat .v { font-size: 18px; font-weight: 700; margin-top: 2px; }
+        .totals {
+            display: flex; justify-content: space-between;
+            font-size: 13px; color: var(--text-2);
+            padding: 0 4px 10px; border-bottom: 1px solid var(--separator);
+        }
+        .totals b { color: var(--text); }
+        .totals b.green { color: var(--green); }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 10px 4px; border-bottom: 1px solid var(--separator); vertical-align: middle; }
+        .t-name { font-size: 15px; font-weight: 500; }
+        .t-phone { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+        .t-grade { font-size: 13px; color: var(--text-2); text-align: center; white-space: nowrap; }
+        .pill {
+            display: inline-block; padding: 3px 10px; border-radius: 980px;
+            font-size: 12px; font-weight: 600;
+        }
+        .pill.in { background: var(--green-bg); color: var(--green); }
+        .pill.out { background: var(--segment-bg); color: var(--text-2); }
+
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #d946ef;
+            width: 22px; height: 22px; margin: 0 auto;
+            border: 2.5px solid rgba(255,255,255,.35);
+            border-top-color: #fff;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+            animation: spin .8s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .scan-result .loader, .loader.dark { border-color: var(--separator); border-top-color: var(--accent); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* GLOBAL ERROR */
+        #globalError {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            max-width: calc(100% - 32px);
+            padding: 12px 18px; border-radius: 14px;
+            background: var(--red); color: #fff;
+            font-size: 14px; font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0,0,0,.2);
+            z-index: 50;
+        }
+
+        /* ADMIN TRIGGER */
+        .admin-trigger {
+            position: fixed; right: 16px; bottom: 16px;
+            width: 40px; height: 40px; border-radius: 50%;
+            border: none; cursor: pointer;
+            background: var(--card); color: var(--text-3);
+            box-shadow: var(--shadow);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .admin-trigger:hover { color: var(--text); }
+
+        @media (max-width: 380px) {
+            .card { padding: 18px; }
+            .title { font-size: 24px; }
+            .stats { grid-template-columns: repeat(4, 1fr); }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
+<body>
 
     <!-- GLOBAL ERROR MESSAGE -->
-    <div id="globalError" class="fixed top-0 left-0 w-full bg-red-600 text-white p-3 text-center hidden z-50 shadow-lg font-bold border-b-4 border-black text-sm">
-        <!-- Error text will be injected here -->
-    </div>
+    <div id="globalError" class="hidden"></div>
 
     <!-- MAIN CONTAINER -->
-    <div class="w-full max-w-md wedding-card p-4 sm:p-6 relative z-10">
-        
-        <!-- HEADER WITH IMAGE PLACEHOLDER -->
-        <div class="text-center mb-4">
-            <!-- Зменшено відступи та встановлено горизонтальний формат -->
-            <div class="mb-3 border-2 border-black p-1 bg-white shadow-sm mx-auto max-w-full">
-                <!-- Використано max-h для обмеження висоти на мобільних -->
-                <img src="https://i.ibb.co/mV3fXX2k/photo-2025-12-14-00-08-07.jpg" 
-                     alt="Disco Collage" 
-                     class="w-full h-auto max-h-[200px] object-cover object-center grayscale-0"
-                     id="headerImage">
-            </div>
-
-            <h1 class="text-2xl sm:text-3xl font-bold text-black retro-font mb-1 tracking-wider uppercase leading-none">
-                <span class="text-pink-600">Disco</span> Wedding
-            </h1>
-            <div class="flex justify-center items-center space-x-2 text-xs sm:text-sm font-bold bg-yellow-300 inline-block px-2 border border-black transform -skew-x-12 mt-1">
-                <span>80s VIBES</span>
-                <i class="fas fa-compact-disc animate-spin-slow"></i>
-                <span>SCHOOL PARTY</span>
-            </div>
-        </div>
+    <main class="card">
 
         <!-- VIEW: REGISTRATION FORM (Default) -->
         <div id="view-register">
-            <form id="registerForm" class="space-y-3">
-                <!-- Step 1: Personal Data -->
-                <div id="step-data" class="space-y-2">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Ім'я</label>
-                            <input type="text" id="regFirstName" required class="w-full p-2 text-sm input-retro" placeholder="Вася">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Прізвище</label>
-                            <input type="text" id="regLastName" required class="w-full p-2 text-sm input-retro" placeholder="Пупкін">
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                         <div>
-                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Клас</label>
-                            <div class="relative">
-                                <select id="regGrade" required class="w-full p-2 text-sm input-retro appearance-none cursor-pointer">
-                                    <option value="" disabled selected>Клас</option>
-                                    <option value="9">9 Клас</option>
-                                    <option value="10">10 Клас</option>
-                                    <option value="11">11 Клас</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-black">
-                                    <i class="fas fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-black uppercase tracking-wider mb-1">Телефон</label>
-                            <input type="tel" id="regPhone" required class="w-full p-2 text-sm input-retro" placeholder="+380..." value="+380">
-                        </div>
-                    </div>
+            <img src="https://i.ibb.co/mV3fXX2k/photo-2025-12-14-00-08-07.jpg" alt="Disco Collage" class="hero-img" id="headerImage">
+            <p class="eyebrow">Шкільна вечірка · 80-ті</p>
+            <h1 class="title">Дискотека</h1>
+            <p class="subtitle">Зареєструйся, щоб отримати квиток.</p>
 
-                    <!-- ReCaptcha Container (Compact) -->
-                    <div class="flex justify-center my-2 border-2 border-black p-1 bg-gray-50 transform scale-90 origin-center">
-                        <div class="g-recaptcha" data-sitekey="6LeKzCosAAAAALIF_wFbmz3PKZPQZ2nRfAHUxUn4"></div>
+            <form id="registerForm">
+                <div class="row field">
+                    <div>
+                        <label class="label" for="regFirstName">Ім'я</label>
+                        <input type="text" id="regFirstName" required class="input" placeholder="Вася" autocomplete="given-name">
+                    </div>
+                    <div>
+                        <label class="label" for="regLastName">Прізвище</label>
+                        <input type="text" id="regLastName" required class="input" placeholder="Пупкін" autocomplete="family-name">
                     </div>
                 </div>
 
-                <div id="regError" class="text-red-600 text-xs text-center hidden p-1 bg-red-100 border border-red-600 font-bold"></div>
-                
-                <button type="submit" id="regSubmitBtn" class="w-full py-3 btn-retro font-black text-base tracking-widest mt-2">
-                    ОТРИМАТИ КВИТОК!
+                <div class="row field">
+                    <div>
+                        <label class="label" for="regGrade">Клас</label>
+                        <div class="select-wrap">
+                            <select id="regGrade" required class="input">
+                                <option value="" disabled selected>Обрати</option>
+                                <option value="9">9 Клас</option>
+                                <option value="10-А">10-А Клас</option>
+                                <option value="10-Б">10-Б Клас</option>
+                                <option value="10-В">10-В Клас</option>
+                                <option value="10-Г">10-Г Клас</option>
+                                <option value="10-Д">10-Д Клас</option>
+                                <option value="10-Е">10-Е Клас</option>
+                                <option value="10-Є">10-Є Клас</option>
+                                <option value="11-А">11-А Клас</option>
+                                <option value="11-Б">11-Б Клас</option>
+                            </select>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label" for="regPhone">Телефон</label>
+                        <input type="tel" id="regPhone" required class="input" placeholder="+380..." value="+380" autocomplete="tel">
+                    </div>
+                </div>
+
+                <div class="captcha">
+                    <div class="g-recaptcha" data-sitekey="6LeKzCosAAAAALIF_wFbmz3PKZPQZ2nRfAHUxUn4"></div>
+                </div>
+
+                <div id="regError" class="alert hidden"></div>
+
+                <button type="submit" id="regSubmitBtn" class="btn btn-primary" style="margin-top:16px">
+                    Отримати квиток
                 </button>
             </form>
         </div>
 
         <!-- VIEW: TICKET SUCCESS -->
-        <div id="view-ticket" class="hidden text-center space-y-4">
-            <div class="border-b-4 border-dotted border-black pb-4">
-                <div class="bg-green-400 text-black px-4 py-1 border-2 border-black transform rotate-2 inline-block mb-3 font-bold shadow-[3px_3px_0px_rgba(0,0,0,1)] text-sm">
-                    <i class="fas fa-check"></i> ТИ У СПИСКУ!
-                </div>
-                
-                <h3 class="retro-font text-xl text-black mb-1" id="ticketName"></h3>
-                <p class="text-purple-600 font-black uppercase text-xs tracking-widest bg-purple-100 inline-block px-2" id="ticketGrade"></p>
-            </div>
-            
-            <div class="relative">
-                <div class="flex justify-center bg-white p-2 mx-auto w-fit border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">
-                    <div id="qrcode"></div>
-                </div>
-                <p class="text-gray-500 text-[10px] mt-2 font-mono">ID: <span id="ticketId" class="font-bold text-black"></span></p>
-            </div>
+        <div id="view-ticket" class="hidden" style="text-align:center">
+            <span class="badge-ok"><i class="fas fa-check-circle"></i> Ти у списку</span>
+            <h3 class="ticket-name" id="ticketName"></h3>
+            <p class="ticket-grade" id="ticketGrade"></p>
 
-            <div class="text-[10px] font-bold text-red-500 uppercase bg-red-50 p-1 border border-red-200">
-                Зроби скріншот! Без нього не пустять!
+            <div class="qr-box"><div id="qrcode"></div></div>
+            <p class="ticket-id">ID: <span id="ticketId"></span></p>
+
+            <div class="note">
+                <i class="fas fa-camera"></i> Зроби скріншот — без нього не пустять.
             </div>
         </div>
 
         <!-- VIEW: ADMIN LOGIN -->
         <div id="view-admin-login" class="hidden">
-            <h2 class="text-xl retro-font text-center mb-4 text-black">Вхід для своїх</h2>
-            <form id="adminLoginForm" class="space-y-3">
-                <input type="text" id="adminUser" placeholder="Логін" class="w-full p-2 input-retro">
-                <input type="password" id="adminPass" placeholder="Пароль" class="w-full p-2 input-retro">
-                <div id="loginError" class="text-white bg-red-600 p-1 text-xs hidden text-center border border-black font-bold">Невірні дані</div>
-                <button type="submit" class="w-full py-2 bg-black text-white border-2 border-black hover:bg-gray-800 transition font-bold uppercase text-sm">Увійти</button>
-                <button type="button" onclick="showView('view-register')" class="w-full py-1 text-gray-500 hover:text-black text-xs font-bold underline">Назад</button>
+            <h2 class="title" style="margin-bottom:6px">Вхід</h2>
+            <p class="subtitle">Тільки для організаторів.</p>
+            <form id="adminLoginForm">
+                <div class="field">
+                    <input type="text" id="adminUser" placeholder="Логін" class="input" autocomplete="username">
+                </div>
+                <div class="field">
+                    <input type="password" id="adminPass" placeholder="Пароль" class="input" autocomplete="current-password">
+                </div>
+                <div id="loginError" class="alert hidden">Невірний логін або пароль</div>
+                <button type="submit" class="btn btn-primary" style="margin-top:12px">Увійти</button>
+                <button type="button" onclick="showView('view-register')" class="btn-link">Назад</button>
             </form>
         </div>
 
         <!-- VIEW: ADMIN DASHBOARD -->
         <div id="view-admin-dash" class="hidden">
-            <div class="flex justify-between items-center mb-4 border-b-4 border-black pb-2">
-                <h2 class="retro-font text-lg text-black">Фейс-контроль</h2>
-                <button onclick="logoutAdmin()" class="text-[10px] text-red-600 hover:text-red-800 font-black uppercase tracking-wider border border-red-600 px-2 py-1 hover:bg-red-50"> Вихід <i class="fas fa-sign-out-alt ml-1"></i></button>
+            <div class="admin-head">
+                <h2>Фейс-контроль</h2>
+                <button onclick="logoutAdmin()" class="btn-link" style="width:auto;padding:4px">Вийти</button>
             </div>
 
             <!-- Tabs -->
-            <div class="flex space-x-0 mb-4 border-2 border-black">
-                <button onclick="switchAdminTab('scan')" id="tab-scan" class="flex-1 py-2 bg-yellow-300 text-black text-xs font-bold border-r-2 border-black hover:bg-yellow-400">СКАНЕР</button>
-                <button onclick="switchAdminTab('list')" id="tab-list" class="flex-1 py-2 bg-white text-gray-500 text-xs font-bold hover:bg-gray-100">СПИСОК</button>
+            <div class="segmented">
+                <button onclick="switchAdminTab('scan')" id="tab-scan" class="active">Сканер</button>
+                <button onclick="switchAdminTab('list')" id="tab-list">Список</button>
             </div>
 
             <!-- Tab Content: Scanner -->
             <div id="admin-scan-content">
-                <!-- Removed class h-64, relying on CSS min-height -->
                 <div id="reader"></div>
-                
-                <div id="scanResult" class="mt-4 p-3 text-center hidden font-bold text-sm border-2 border-black shadow-[3px_3px_0px_#000]"></div>
-                <div class="mt-4 text-center">
-                    <button id="startScanBtn" class="bg-green-500 text-black border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] text-sm">
-                        <i class="fas fa-camera mr-2"></i> Сканувати
-                    </button>
-                    <button id="stopScanBtn" class="bg-red-500 text-white border-2 border-black px-6 py-2 font-black uppercase shadow-[3px_3px_0px_#000] hidden text-sm">
-                        Зупинити
-                    </button>
+                <div id="scanResult" class="scan-result hidden"></div>
+                <div style="text-align:center;margin-top:16px">
+                    <button id="startScanBtn" class="btn-pill primary"><i class="fas fa-camera"></i> Сканувати</button>
+                    <button id="stopScanBtn" class="btn-pill danger hidden">Зупинити</button>
                 </div>
             </div>
 
             <!-- Tab Content: List & Stats -->
-            <div id="admin-list-content" class="hidden h-80 overflow-y-auto pr-1">
-                <!-- Stats -->
-                <div class="grid grid-cols-3 gap-2 mb-4 text-center">
-                    <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                        <div class="text-[9px] text-gray-500 uppercase font-bold">9 Клас</div>
-                        <div id="count9" class="text-lg text-pink-600 font-black">0</div>
-                    </div>
-                    <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                        <div class="text-[9px] text-gray-500 uppercase font-bold">10 Клас</div>
-                        <div id="count10" class="text-lg text-purple-600 font-black">0</div>
-                    </div>
-                    <div class="bg-white p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                        <div class="text-[9px] text-gray-500 uppercase font-bold">11 Клас</div>
-                        <div id="count11" class="text-lg text-blue-600 font-black">0</div>
-                    </div>
-                </div>
-                
-                <div class="flex justify-between text-[10px] font-bold mb-2 px-1 border-b-2 border-gray-200 pb-2">
-                    <span>Всього: <span id="totalReg" class="text-black">0</span></span>
-                    <span>Прийшли: <span id="totalEntered" class="text-green-600">0</span></span>
+            <div id="admin-list-content" class="hidden">
+                <div id="gradeStats" class="stats">
+                    <!-- Per-class counters generated by JS -->
                 </div>
 
-                <!-- Table -->
-                <table class="w-full text-xs text-left">
-                    <tbody id="studentsTableBody" class="divide-y divide-black">
+                <div class="totals">
+                    <span>Всього: <b id="totalReg">0</b></span>
+                    <span>Прийшли: <b id="totalEntered" class="green">0</b></span>
+                </div>
+
+                <table>
+                    <tbody id="studentsTableBody">
                         <!-- Rows generated by JS -->
                     </tbody>
                 </table>
             </div>
         </div>
 
-    </div>
+    </main>
 
     <!-- Hidden Admin Trigger -->
-    <div class="fixed bottom-2 right-2">
-        <button onclick="showView('view-admin-login')" class="text-black hover:text-pink-600 transition p-2 bg-yellow-300 border-2 border-black shadow-[2px_2px_0px_#000]">
-            <i class="fas fa-user-secret text-lg"></i>
-        </button>
-    </div>
+    <button onclick="showView('view-admin-login')" class="admin-trigger" aria-label="Адмін">
+        <i class="fas fa-lock"></i>
+    </button>
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
@@ -306,17 +506,20 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        
+
         // Ensure auth language is Ukrainian for SMS templates/Captcha
         auth.languageCode = 'uk';
 
         // UI HELPERS
         const showGlobalError = (msg) => {
             const el = document.getElementById('globalError');
-            el.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${msg}`;
+            el.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
             el.classList.remove('hidden');
             setTimeout(() => el.classList.add('hidden'), 5000);
         };
+
+        // CLASSES (must match <select id="regGrade"> options)
+        const GRADES = [...document.querySelectorAll('#regGrade option[value]:not([value=""])')].map(o => o.value);
 
         // GLOBAL STATE
         let html5QrCode;
@@ -347,7 +550,7 @@
                 }
             }
         }
-        
+
         // Init setup on load
         showView('view-register');
 
@@ -361,11 +564,11 @@
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorDiv.classList.add('hidden');
-            
+
             // 1. CAPTCHA CHECK
             const captchaResponse = grecaptcha.getResponse();
             if (!captchaResponse) {
-                errorDiv.innerText = "Підтвердіть, що ви не робот!";
+                errorDiv.innerText = "Підтвердіть, що ви не робот.";
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -377,7 +580,7 @@
             const phone = document.getElementById('regPhone').value.trim();
 
             if (!firstName || !lastName || !grade || !phone) {
-                errorDiv.innerText = "Заповніть всі поля!";
+                errorDiv.innerText = "Заповніть усі поля.";
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -404,32 +607,32 @@
                 document.getElementById('qrcode').innerHTML = "";
                 new QRCode(document.getElementById('qrcode'), {
                     text: guestId,
-                    width: 140, // Slightly smaller QR
-                    height: 140,
-                    colorDark : "#1a1a1a",
+                    width: 160,
+                    height: 160,
+                    colorDark : "#1d1d1f",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
 
                 // 5. Show Ticket
                 document.getElementById('ticketName').textContent = `${firstName} ${lastName}`;
-                document.getElementById('ticketGrade').textContent = `${grade} Клас`;
+                document.getElementById('ticketGrade').textContent = `${grade} клас`;
                 document.getElementById('ticketId').textContent = guestId;
 
                 showView('view-ticket');
                 localStorage.setItem('saved_ticket', guestId);
-                
+
                 registerForm.reset();
                 grecaptcha.reset();
 
             } catch (error) {
                 console.error("Registration Error:", error);
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Хочу на Дискотеку!";
-                
+                submitBtn.textContent = "Отримати квиток";
+
                 let msg = "Помилка реєстрації.";
                 if (error.code === 'permission-denied') msg = "Помилка доступу до бази.";
-                
+
                 errorDiv.innerHTML = msg;
                 errorDiv.classList.remove('hidden');
             }
@@ -445,7 +648,7 @@
             const err = document.getElementById('loginError');
 
             // HARDCODED ADMIN CREDENTIALS
-            if (u === 'admin' && p === 'disco2024') {
+            if (u === 'admin' && p === 'Гімназія') {
                 document.getElementById('adminUser').value = '';
                 document.getElementById('adminPass').value = '';
                 err.classList.add('hidden');
@@ -461,30 +664,11 @@
         }
 
         window.switchAdminTab = (tab) => {
-            const btnScan = document.getElementById('tab-scan');
-            const btnList = document.getElementById('tab-list');
-            const viewScan = document.getElementById('admin-scan-content');
-            const viewList = document.getElementById('admin-list-content');
-
-            if (tab === 'scan') {
-                btnScan.classList.replace('bg-white', 'bg-yellow-300');
-                btnScan.classList.replace('text-gray-500', 'text-black');
-                
-                btnList.classList.replace('bg-yellow-300', 'bg-white');
-                btnList.classList.replace('text-black', 'text-gray-500');
-                
-                viewScan.classList.remove('hidden');
-                viewList.classList.add('hidden');
-            } else {
-                btnList.classList.replace('bg-white', 'bg-yellow-300');
-                btnList.classList.replace('text-gray-500', 'text-black');
-                
-                btnScan.classList.replace('bg-yellow-300', 'bg-white');
-                btnScan.classList.replace('text-black', 'text-gray-500');
-
-                viewList.classList.remove('hidden');
-                viewScan.classList.add('hidden');
-            }
+            const isScan = tab === 'scan';
+            document.getElementById('tab-scan').classList.toggle('active', isScan);
+            document.getElementById('tab-list').classList.toggle('active', !isScan);
+            document.getElementById('admin-scan-content').classList.toggle('hidden', !isScan);
+            document.getElementById('admin-list-content').classList.toggle('hidden', isScan);
         }
 
         // =======================
@@ -496,9 +680,9 @@
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("reader");
             }
-            
+
             const config = { fps: 10, qrbox: { width: 220, height: 220 } };
-            
+
             html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
             .then(() => {
                 document.getElementById('startScanBtn').classList.add('hidden');
@@ -524,9 +708,8 @@
             isProcessingScan = true;
 
             const resDiv = document.getElementById('scanResult');
-            resDiv.classList.remove('hidden', 'bg-green-300', 'bg-red-300', 'bg-yellow-300', 'text-white');
+            resDiv.className = "scan-result";
             resDiv.innerHTML = '<div class="loader"></div>';
-            resDiv.className = "mt-4 p-3 text-center font-bold text-sm bg-white border-2 border-black shadow-[3px_3px_0px_#000]";
 
             try {
                 const docRef = doc(db, "guests", decodedText);
@@ -534,41 +717,42 @@
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    
+
                     if (data.status === 'registered') {
                         // SUCCESS
                         await updateDoc(docRef, {
                             status: 'entered',
                             enteredAt: serverTimestamp()
                         });
-                        resDiv.className = "mt-4 p-3 text-center bg-green-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                        resDiv.className = "scan-result scan-ok";
                         resDiv.innerHTML = `
-                            <div class="text-green-800 text-2xl mb-1"><i class="fas fa-thumbs-up"></i></div>
-                            <div class="font-black uppercase text-black text-lg">${data.firstName} ${data.lastName}</div>
-                            <div class="text-[10px] text-green-800 font-bold uppercase tracking-widest mt-1">ВХІД ДОЗВОЛЕНО (${data.grade} кл)</div>
+                            <div class="icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="name">${data.firstName} ${data.lastName}</div>
+                            <div class="sub">Вхід дозволено · ${data.grade} клас</div>
                         `;
                         playBeep(true);
                     } else if (data.status === 'entered') {
                         // ALREADY USED
-                        resDiv.className = "mt-4 p-3 text-center bg-yellow-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                        resDiv.className = "scan-result scan-warn";
                         resDiv.innerHTML = `
-                            <div class="text-yellow-800 text-2xl mb-1"><i class="fas fa-hand-paper"></i></div>
-                            <div class="font-black uppercase text-black text-lg">${data.firstName} ${data.lastName}</div>
-                            <div class="text-[10px] text-yellow-800 font-bold uppercase tracking-widest mt-1">ВЖЕ ЗАЙШОВ!</div>
+                            <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="name">${data.firstName} ${data.lastName}</div>
+                            <div class="sub">Вже зайшов</div>
                         `;
                         playBeep(false);
                     }
                 } else {
                     // NOT FOUND
-                    resDiv.className = "mt-4 p-3 text-center bg-red-200 border-2 border-black shadow-[3px_3px_0px_#000]";
+                    resDiv.className = "scan-result scan-bad";
                     resDiv.innerHTML = `
-                        <div class="text-red-800 text-2xl mb-1"><i class="fas fa-ban"></i></div>
-                        <div class="font-black text-red-800 uppercase tracking-widest text-xs">ФАЛЬШИВКА!</div>
+                        <div class="icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="name" style="color:inherit">Квиток недійсний</div>
                     `;
                     playBeep(false);
                 }
             } catch (err) {
                 console.error(err);
+                resDiv.className = "scan-result scan-bad";
                 resDiv.innerText = "Помилка";
             }
 
@@ -580,16 +764,16 @@
         function playBeep(success) {
             const context = new (window.AudioContext || window.webkitAudioContext)();
             const osc = context.createOscillator();
-            osc.type = success ? 'square' : 'sawtooth'; // Retro sounds
-            osc.frequency.value = success ? 880 : 150;
+            osc.type = success ? 'sine' : 'triangle';
+            osc.frequency.value = success ? 880 : 220;
             osc.connect(context.destination);
             osc.start();
             osc.stop(context.currentTime + 0.15);
             if(success) {
                 setTimeout(() => {
                     const osc2 = context.createOscillator();
-                    osc2.type = 'square';
-                    osc2.frequency.value = 1760;
+                    osc2.type = 'sine';
+                    osc2.frequency.value = 1320;
                     osc2.connect(context.destination);
                     osc2.start();
                     osc2.stop(context.currentTime + 0.1);
@@ -604,41 +788,42 @@
             if (unsubscribeListeners) return;
 
             const q = query(collection(db, "guests"), orderBy("createdAt", "desc"));
-            
+
             unsubscribeListeners = onSnapshot(q, (snapshot) => {
                 const tableBody = document.getElementById('studentsTableBody');
-                let c9 = 0, c10 = 0, c11 = 0;
+                const counts = Object.fromEntries(GRADES.map(g => [g, 0]));
                 let entered = 0;
                 let html = '';
 
                 snapshot.docs.forEach(doc => {
                     const d = doc.data();
-                    
-                    if (d.grade == '9') c9++;
-                    if (d.grade == '10') c10++;
-                    if (d.grade == '11') c11++;
+
+                    if (d.grade in counts) counts[d.grade]++;
                     if (d.status === 'entered') entered++;
 
-                    const statusBadge = d.status === 'entered' 
-                        ? '<span class="px-2 py-1 bg-green-200 text-black border border-black rounded-none text-[9px] font-bold uppercase">Є</span>' 
-                        : '<span class="px-2 py-1 bg-gray-100 text-gray-500 border border-gray-300 rounded-none text-[9px] font-bold uppercase">Нема</span>';
+                    const statusBadge = d.status === 'entered'
+                        ? '<span class="pill in">Є</span>'
+                        : '<span class="pill out">Нема</span>';
 
                     html += `
-                        <tr class="hover:bg-yellow-50 transition border-b border-black">
-                            <td class="px-1 py-2">
-                                <div class="font-bold text-black uppercase text-xs">${d.firstName} ${d.lastName}</div>
-                                <div class="text-[9px] text-gray-500 font-mono">${d.phone}</div>
+                        <tr>
+                            <td>
+                                <div class="t-name">${d.firstName} ${d.lastName}</div>
+                                <div class="t-phone">${d.phone}</div>
                             </td>
-                            <td class="px-1 py-2 text-xs font-bold text-black border-l border-black text-center">${d.grade}</td>
-                            <td class="px-1 py-2 text-right border-l border-black">${statusBadge}</td>
+                            <td class="t-grade">${d.grade}</td>
+                            <td style="text-align:right">${statusBadge}</td>
                         </tr>
                     `;
                 });
 
                 tableBody.innerHTML = html;
-                document.getElementById('count9').innerText = c9;
-                document.getElementById('count10').innerText = c10;
-                document.getElementById('count11').innerText = c11;
+                document.getElementById('gradeStats').innerHTML = GRADES.map(g => `
+                    <div class="stat">
+                        <div class="k">${g}</div>
+                        <div class="v">${counts[g]}</div>
+                    </div>
+                `).join('');
                 document.getElementById('totalReg').innerText = snapshot.size;
                 document.getElementById('totalEntered').innerText = entered;
             }, (error) => {
