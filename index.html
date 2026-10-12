@@ -429,17 +429,18 @@
 
         <!-- VIEW: ADMIN LOGIN -->
         <div id="view-admin-login" class="hidden">
-            <h2 class="title" style="margin-bottom:6px">Вхід</h2>
-            <p class="subtitle">Тільки для організаторів.</p>
-            <form id="adminLoginForm">
-                <div class="field">
-                    <input type="text" id="adminUser" placeholder="Логін" class="input" autocomplete="username">
-                </div>
+            <h2 class="title" style="margin-bottom:6px" id="adminLoginTitle">Вхід</h2>
+            <p class="subtitle" id="adminLoginSubtitle">Тільки для організаторів.</p>
+            <div id="adminLoginLoading" style="padding:24px 0"><div class="loader dark"></div></div>
+            <form id="adminLoginForm" class="hidden">
                 <div class="field">
                     <input type="password" id="adminPass" placeholder="Пароль" class="input" autocomplete="current-password">
                 </div>
-                <div id="loginError" class="alert hidden">Невірний логін або пароль</div>
-                <button type="submit" class="btn btn-primary" style="margin-top:12px">Увійти</button>
+                <div class="field hidden" id="adminPass2Field">
+                    <input type="password" id="adminPass2" placeholder="Повтори пароль" class="input" autocomplete="new-password">
+                </div>
+                <div id="loginError" class="alert hidden"></div>
+                <button type="submit" id="adminSubmitBtn" class="btn btn-primary" style="margin-top:12px">Увійти</button>
                 <button type="button" onclick="showView('view-register')" class="btn-link">Назад</button>
             </form>
         </div>
@@ -489,14 +490,14 @@
     </main>
 
     <!-- Hidden Admin Trigger -->
-    <button onclick="showView('view-admin-login')" class="admin-trigger" aria-label="Адмін">
+    <button onclick="openAdmin()" class="admin-trigger" aria-label="Адмін">
         <i class="fas fa-lock"></i>
     </button>
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // CONFIGURATION
@@ -649,25 +650,131 @@
         // =======================
         // ADMIN LOGIC
         // =======================
-        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const u = document.getElementById('adminUser').value;
-            const p = document.getElementById('adminPass').value;
-            const err = document.getElementById('loginError');
+        // The first person to open the admin panel sets the password.
+        // Its salted hash lives in guests/admin-config (the only collection the
+        // Firestore rules allow). The doc has no createdAt, so the dashboard
+        // query (orderBy createdAt) never lists it.
+        const ADMIN_DOC_ID = 'admin-config';
+        const ADMIN_SESSION_KEY = 'admin_session';
+        const adminDocRef = doc(db, "guests", ADMIN_DOC_ID);
+        let adminConfig = null; // { salt, passwordHash } or null if not set yet
 
-            // HARDCODED ADMIN CREDENTIALS
-            if (u === 'admin' && p === 'Гімназія') {
-                document.getElementById('adminUser').value = '';
-                document.getElementById('adminPass').value = '';
-                err.classList.add('hidden');
-                initAdminDashboard();
-                showView('view-admin-dash');
+        const sha256 = async (text) => {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+            return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        };
+        const randomSalt = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
+
+        const getSession = () => { try { return localStorage.getItem(ADMIN_SESSION_KEY); } catch { return null; } };
+        const setSession = (v) => { try { v ? localStorage.setItem(ADMIN_SESSION_KEY, v) : localStorage.removeItem(ADMIN_SESSION_KEY); } catch {} };
+
+        const enterAdmin = () => {
+            initAdminDashboard();
+            showView('view-admin-dash');
+        };
+
+        const loginTitle = document.getElementById('adminLoginTitle');
+        const loginSubtitle = document.getElementById('adminLoginSubtitle');
+        const loginLoading = document.getElementById('adminLoginLoading');
+        const loginForm = document.getElementById('adminLoginForm');
+        const pass2Field = document.getElementById('adminPass2Field');
+        const adminSubmitBtn = document.getElementById('adminSubmitBtn');
+        const loginErr = document.getElementById('loginError');
+
+        const showLoginError = (msg) => {
+            loginErr.textContent = msg;
+            loginErr.classList.remove('hidden');
+        };
+
+        window.openAdmin = async () => {
+            showView('view-admin-login');
+            loginForm.classList.add('hidden');
+            loginErr.classList.add('hidden');
+            loginLoading.classList.remove('hidden');
+            loginTitle.textContent = 'Вхід';
+            loginSubtitle.textContent = 'Тільки для організаторів.';
+
+            try {
+                if (!auth.currentUser) await signInAnonymously(auth);
+                const snap = await getDoc(adminDocRef);
+                adminConfig = snap.exists() ? snap.data() : null;
+            } catch (err) {
+                console.error(err);
+                loginLoading.classList.add('hidden');
+                showLoginError('Не вдалося підключитися до бази.');
+                return;
+            }
+
+            // Remembered on this device
+            if (adminConfig && getSession() === adminConfig.passwordHash) {
+                enterAdmin();
+                return;
+            }
+
+            const isSetup = !adminConfig;
+            loginTitle.textContent = isSetup ? 'Створи пароль' : 'Вхід';
+            loginSubtitle.textContent = isSetup
+                ? 'Адміна ще немає. Хто задасть пароль — той і адмін.'
+                : 'Тільки для організаторів.';
+            pass2Field.classList.toggle('hidden', !isSetup);
+            document.getElementById('adminPass').autocomplete = isSetup ? 'new-password' : 'current-password';
+            adminSubmitBtn.textContent = isSetup ? 'Стати адміном' : 'Увійти';
+            loginLoading.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            document.getElementById('adminPass').focus();
+        };
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginErr.classList.add('hidden');
+            const p = document.getElementById('adminPass').value;
+            const p2 = document.getElementById('adminPass2').value;
+
+            if (!adminConfig) {
+                // SETUP: first admin claims the panel
+                if (p.length < 6) return showLoginError('Пароль має бути щонайменше 6 символів.');
+                if (p !== p2) return showLoginError('Паролі не збігаються.');
+
+                adminSubmitBtn.disabled = true;
+                try {
+                    const salt = randomSalt();
+                    const passwordHash = await sha256(salt + p);
+                    await runTransaction(db, async (tx) => {
+                        const snap = await tx.get(adminDocRef);
+                        if (snap.exists()) throw new Error('already-claimed');
+                        tx.set(adminDocRef, { kind: 'admin', salt, passwordHash, claimedAt: serverTimestamp() });
+                    });
+                    adminConfig = { salt, passwordHash };
+                    setSession(passwordHash);
+                    loginForm.reset();
+                    enterAdmin();
+                } catch (err) {
+                    console.error(err);
+                    if (err.message === 'already-claimed') {
+                        await openAdmin();
+                        showLoginError('Хтось уже став адміном. Введи його пароль.');
+                    } else {
+                        showLoginError('Не вдалося зберегти пароль.');
+                    }
+                } finally {
+                    adminSubmitBtn.disabled = false;
+                }
+                return;
+            }
+
+            // LOGIN
+            const hash = await sha256(adminConfig.salt + p);
+            if (hash === adminConfig.passwordHash) {
+                setSession(hash);
+                loginForm.reset();
+                enterAdmin();
             } else {
-                err.classList.remove('hidden');
+                showLoginError('Невірний пароль.');
             }
         });
 
         window.logoutAdmin = () => {
+            setSession(null);
             showView('view-register');
         }
 
@@ -723,7 +830,7 @@
                 const docRef = doc(db, "guests", decodedText);
                 const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists()) {
+                if (docSnap.exists() && decodedText !== ADMIN_DOC_ID && isTicket(docSnap)) {
                     const data = docSnap.data();
 
                     if (data.status === 'registered') {
@@ -768,6 +875,8 @@
                 isProcessingScan = false;
             }, 3000);
         };
+
+        const isTicket = (snap) => ['registered', 'entered'].includes(snap.data().status);
 
         function playBeep(success) {
             const context = new (window.AudioContext || window.webkitAudioContext)();
